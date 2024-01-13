@@ -39,13 +39,9 @@ safe: false
 include: ["_pages"]
 
 collections:
-  compulsory_courses:
+  pages:
     output: true
-    permalink: /:collection/:path
-
-  information_security:
-    output: true
-    permalink: /:collection/:path
+    permalink: /:collection/:path/
 
 # Exclude from processing.
 # The following items will not be processed, by default.
