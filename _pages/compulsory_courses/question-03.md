@@ -1,5 +1,5 @@
 ---
-title: Cryptosystems - Applications
+title: Cryptosystems – Applications
 author: John Doe
 category: Compulsory Courses
 layout: post
