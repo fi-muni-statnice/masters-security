@@ -252,14 +252,147 @@ Testing is the **process** of **exercising or evaluating** a system or system co
 - **Visibility**: making information accessible
 - **Feedback**: applying lessons from experience in process and techniques
 
-### Unit tests
+### Testing Levels
+- **Acceptance testing:** A system is tested for acceptability. Aim: evaluate the system’s compliance with the **business requirements** and ready for delivery.
+- **System testing:** A complete, integrated system/software is tested. Aim: evaluate the system’s compliance with the **specified requirements**.
+- **Integration testing:** Individual units are combined and tested as a group. Aim: expose faults in the **interaction between integrated units**.
+- **Unit testing:** A level of the software testing process where individual units/components of a software/system are tested – Validate that **each unit** performs as designed
 
-### Integration tests
+### Unit Tests
+A level of the software testing process where individual units/components of a software/system are tested – Validate that **each unit** performs as designed.
 
-### User and acceptance testing
+Tests must
+- be fast
+- be simple
+- not include duplication of implementation logic
+- be readable
+- be deterministic
+- be part of the build process
+- use mocks (test doubles)
+- have consistent naming conventions
+
+#### AAA Pattern
+1. **Arrange:** set up the conditions for the test
+2. **Act:** run the code under test
+3. **Assert:** verify the behaviour
+
+#### Test Double
+Test double is a replacement for a dependent component or a module that is used in a unit test.
+
+- **Dummy objects:** items passed around but never used
+- **Fake objects:** have working implementations but are not suitable for production use (e.g., an in-memory database)
+- **Stubs:** provide constrained answers to calls made during the test, not responding to anything outside of the tests
+- **Spies:** stubs that also record information based on how they were called (e.g., a stub e-mail service that logs number of e-mails sent)
+- **Mocks:** objects pre-programmed with expectations which form a specification of the calls they are expected
+
+### Integration Tests
+Individual units are combined and tested as a group. Aim: expose faults in the **interaction between integrated units**.
+
+The goal is to test "whether many separately developed modules work together as expected".
+
+- Integration tests use external dependencies.
+- Integration Tests verify several modules at once.
+- Slower and more complex than Unit tests.
+
+### User and Acceptance Testing
+Acceptance tests ensure that a software system meets the **requirements** from the **customer**.
+
+The customer can write what he expects from the implementation. Frameworks: FitNesse, Selenium
 
 ## Performance Engineering and Testing
+Load/Stress Testing: verify the system under heavy loads
+
+- **Load Testing**: evaluating system while exposed to the expected volume of traffic under peak conditions
+  - load = number of concurrent users accessing the application, amount of transactions completed over a set time
+- **Stress Testing**: assessing the upper limits of the system by simulating amount of traffic beyond the expected peak levels
+  - provides info about maximum capabilities, scalability, breaking points
+- **Soak Testing**: system exposed to a constant, average level of stress for an extended period of time, while also simulating periodic traffic peaks
+  - assess memory leaks, performance degradation after long continuous use
 
 ## Development Methods Based on Testing
+### Test Driven Development (TDD)
+Steps:
+1. Create a failing test
+2. Code it to make it pass
+3. Refactor other code and tests
+
+Tests have to be:
+- **fast**: short time to run
+- **independent**: not depend on other tests, components, database, etc.
+- **repeatable**: deterministic
+- **self-checking**: a test must be able to check its own state
+- **timely**: test must come before the implementation
+
+### Behaviour Driven Development (TDD)
+With the customer, develop the **requirements** as **scenarios**.
+1. Developers use the **scenarios** for implementation.
+2. Testers use the **scenarios** for testing.
+
+Run tests based on scenarios according to **Given**, **When**, **Then** constructs.
+
+Example:
+> **Scenario**: When a user adds a product to the shopping cart, the product should be
+included in the user's shopping cart. \
+  **Given** a user, \
+  **Given** a shopping cart, \
+  **Given** a product, \
+  **When** the user adds the product to the shopping cart, \
+  **Then** the product must be included in the list of the shopping cart's entries.
+{: .block-warning}
 
 ## Software Quality Management Process
+> Software quality management (SQM) is the collection of all processes that ensure that software products, services, and life cycle process implementations meet organizational software quality objectives and achieve stakeholder satisfaction. (SWEBOK 3.0)
+{: .block-warning}
+
+SQM defines processes, process owners, requirements for the processes, measurements of the processes and their outputs, and feedback channels throughout the whole software life cycle.
+
+### SQM Categories
+#### 1. Software quality planning (SQP)
+Concerned about which **quality standards** are to be used, defining specific **quality goals**, and **estimating** the effort and schedule of software quality activities.
+
+A quality plan defines how an organization will reach the quality objectives.
+Usually covers:
+- quality objectives and goals
+- quality management scope
+- organisation & responsibilities
+- resource requirements
+- cost benefit analysis
+- activites and deliberables
+- schedule
+- risk analysis
+
+#### 2. Software quality assurance (SQA)
+**Define and assess** the adequacy of software processes to provide evidence that **establishes confidence** that the software processes are appropriate for and produce software products of **suitable quality** for their **intended purpose**.
+
+SQA means to **constantly monitor** the software engineering process to ensure that the approaches/methods/processes applied **lead to quality** within the project.
+
+SQA with Agile:
+- the product backlog is the contract, the standards help in defining the role of the backlog as contract
+- non-conformances to standards are inserted in the backlog and addressed in sprints in which they are scheduler
+- acceptance is a continuous process
+
+#### 3. Software quality control (SQC)
+Activities examine specific project artifacts (documents and executables) to determine whether they **comply with standards established** for the project (including requirements, constraints, designs, contracts, and plans).
+
+SQC means to **constantly monitor** the software engineering process/product to **check for conformance to applied standards** or produced artifacts.
+
+Examples of methods:
+- **Goal Questions Metrics** approach: define a *goal* with respect to quality, use a set of *questions* to characterize the way of the assessment of a specific goak, associate a *set of data* with every question in order to answer it in a quantitative way
+- **Plan-Do-Check-Act** method: plan a change, test the change, review the test, take action based on the review - if the change did not work, use a different plan; if it was successful, incorporate it into wider changes
+
+#### 4. Software process improvement (SPI)
+The activities in the category seek to **improve process effectiveness**, efficiency, and other characteristics with the ultimate goal of **improving software quality**.
+
+Software process improvement practices are very often embedded within the process (e.g. capability models).
+
+Methods:
+- Capability Maturity Model, Capability Maturity Model Integration
+  - Level 0: **Incomplete Process** - the process is not implemented or fails to achieve the purpose
+  - Level 1: **Performed Process** - the process is achieving the purpose
+  - Level 2: **Managed Process** - the process is now running in a managed way (planned, monitored, adjusted) – work products are established, controlled and maintained
+  - Level 3: **Established Process** - the process is implemented using a defined process capable of achieving process outcomes
+  - Level 4: **Predictable Process** - the process now operates within defined limits to achieve its process outcomes
+  - Level 5: **Optimizing Process** - the predictable process is continuously improved to meet relevant current and projected business goals
+- ISO/IEC 15504 (SPICE)
+- ISO 9001
+- Personal Software Process
