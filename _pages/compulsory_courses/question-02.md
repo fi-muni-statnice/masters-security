@@ -239,25 +239,74 @@ To decrypt, Bob takes $c$ and calculates
 
 $b \cdot a^{-x} \equiv m \cdot y^r \cdot q^{-xr} \equiv m \cdot q^{xr} \cdot q^{-xr} \equiv m \pmod{p}$.
 
-# Integer Factorization
+# Integer Factorization and Primality Testing
+Euclid theorem states that we can **uniquely factor** every integer $n$ into a power of primes
 
-## Trial Division
+$$n = \prod_{i=1}^k{p_i^{e_i}}$$
 
-## Euler's Factorization
+However, finding the prime factors is not computationally trivial.
 
-## Fermat's Factorization
+- **Integer Factorization**: If $n$ can be factorized, find its factors.
+  - assumed to be hard problem (one of the few hard problems used for cryptography)
+  - best asymptotic running time for found algorithms is sub-exponential (GNFS)
+  - factorization can be done in **polynomial time** on a **quantum computer** using Shor's algorithm
+- **Primality testing**: Can a given integer $n$ be factorized?
+  - polynomial deterministic algorithm exists (AKS primality test), although not used in practice
+  - in practice (OpenSSL), prime testing is done by trial division by a number of small primes and rounds of the of the Rabin-Miller probabilistic primality test (at least 64 rounds, giving a maximum false positive rate of $2^{-128}$)
 
-## Pollard's Rho Factorization
+*[AKS]: Agrawal–Kayal–Saxena
+*[GNFS]: general number field sieve
 
-# Primality Testing
+## Integer Factorization Algorithms
 
-[PRIMES is in P](https://www.cse.iitk.ac.in/users/manindra/algebra/primality_v6.pdf)
+### Trial Division
+Divide $n$ with all primes $2, 3, 5, \dots$ up to $\sqrt{n}$ or until you find a factor. If the factor is not found, $n$ is prime.
+Each time you divide $n$ by a prime, delete all multiples of the prime from the list of considered integers (sieve of Eratosthenes).
 
-## Sieve of Eratosthenes
+Time complexity: $e^{\frac{1}{2}\ln{n}}$ (exponential)
 
-## Fermat Test
+### Pollard's Rho Factorization
+The algorithm is used to factor $n = pq$, with the method working good for one of $p, q$ being quite small.
 
-## Rabin-Miller Algorithm
+We choose $x_0$ and a polynomial $f(x)$ (typically $x_0 = 2, f(x) = x^2 + 1$). Then we set $x = x_0, y = y_0$ and use [Floyd's cycle-finding algorithm](https://en.wikipedia.org/wiki/Pollard%27s_rho_algorithm) (tortoise and hare) to compute repeatedly:
+
+$$\begin{align*}
+x &\equiv f(x) &\pmod{n}\\
+y &\equiv f(f(y))&\pmod{n}\\
+d &= \gcd(|x - y|, n) &
+\end{align*}$$
+
+If $d$ is not equal to $1$, we found a cycle in the sequence and therefore we found either $x \equiv y \pmod{n}$ or $x \equiv y \pmod{p}$ for one of the non-trivial factors $p$. The latter is more probable as due to the birthday paradox the expected length of the cycle in $\{x_k} \pmod{p} = \sqrt{p} < < \sqrt{n}$.
+
+So if $d \not= 1$, we terminate the algorithm. Now $d$ is either a non-trivial factor of $n$ (which we were searching for), or it is $n$. In that case we may repeat the algorithm with different choices of $x_0$ and $f(x)$.
+
+![pollard-rho](/masters-security/assets/pollard_rho.png 'Pollard's rho algorithm'){: height="300"}
+
+Complexity: proportional to the square root of the size of the smallest prime factor (this is not rigorous)
+
+## Primality Testing
+
+### Fermat Test
+Input: $n > 3$ - integer to test for primality, $k$ - number of times to check for primality
+
+Repeat $k$ times:
+1. Pick $a$ in range $[2, n - 2]$.
+2. If $a^n \not\equiv a \pmod{n}$, $n$ is composite, halt.
+
+If the algorithm is not halted after $k$ times, we say that $n$ may be prime. However, Carmichael numbers are composite numbers where for all $a$ such that $\gcd(a, n)$ it holds that $a^n \equiv a \pmod{n}$, therefore Fermat test for the Carmichael numbers is computationally equivalent to bruteforce searching for the factors.
+
+### Rabin-Miller Algorithm
+Rabin-Miller is an extension of the Fermat test that uses the extra information that the **only** roots of $x^2 - 1 \pmod{p}$ (this is equivalent to $x^2 \equiv 1 \pmod{p}$) are $x = \pm{1}$ **iff** $p$ is prime, because for
+
+$$(x + 1)(x - 1) \equiv 0 \pmod{p}$$
+
+the only solutions for $x$ are $\pm{1}$ if $p$ is prime. For composite moduli $n = p_1 \dots p_k$ we can use the CRT to compute solutions to $x^2 - 1$ over each $\mathbb{Z}_{p_i}$ and combine the roots together to find the solutions modulo $n$. Therefore there are $2^k$ different roots of the polynomial for composite $n$.
+
+We start with checking whether $a^{n - 1} \equiv 1 \pmod{n}$ (this is exactly Fermat test), but if it passes, we continue with checking $a^{(n - 1)/2} \equiv \pm 1 \pmod{n}$, as $a^{(n - 1) / 2}$ is a square root of $1$. We continue halving the exponent until we reach a number besides $1$. If it's not equal to $-1$, then $n$ must be composite (as the theorem above does not hold).
+
+For any composite $n$ (including Carmichael numbers), the probability it passes a single instance of the Rabin-Miller test is **at most** $\frac{1}{4}$. Therefore, with $k$ rounds of Rabin-Miller we know that $n$ is prime with probability at least $2^{-2k}$.
+
+*[CRT]: Chinese Remainder Theorem
 
 # Principles of Hash Function Construction
 A hash function maps long strings from a set $M = \bin^{\leq L}$ onto short strings (called hashes) from a set $H = \bin^{\ell}$, where $\ell < < L$.
@@ -363,8 +412,10 @@ If $x_1 = x_2$ and either $y_1 \not= y_2$ or $y_1 = y_2 = 0$, then $(x_1, y_1) +
 The EC group is always cyclic or bicyclic.
 
 ### ECDH
+The same as the Diffie-Hellman algorithm explained above, but we use an elliptic curve modulo a large prime field $\mathbb{F}_p$ as the group.
 
 ### ECDSA
+ECDSA is based on DSA but the group is again an elliptic curve modulo a large prime field $\mathbb{F}_p$.
 
 ## Discrete Logarithm
 We use **additive** notation with EC groups. A $k$-fold application of the group operation $+$ is denoted as
