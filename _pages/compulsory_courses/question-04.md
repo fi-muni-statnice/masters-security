@@ -5,6 +5,8 @@ category: Compulsory Courses
 layout: post
 ---
 
+$\def\cwnd{\text{cwnd}}$
+
 Computer networks. Network models and their layers, their functionality, interaction, standardization. Protocols at network layer, IPv4 features, advanced IPv6 features, address space. Routing: routers and their architecture, routing algorithms, families of routing algorithms, multicast routing, MPLS, TE. Transport protocols: UDP, properties of TCP and its variants, transport protocols for high-speed networks. (PA191)
 
 # Computer Networks
@@ -237,7 +239,7 @@ The goal is to disable some bridges' ports to prevents loops.
   - each router decrements the number by 1
   - when TTL = 0, the datagram is discarded
 - **Protocol**: higher-level protocol identification
-  - the identifiers are [specified](http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml) by IANA
+  - the identifiers are [specified](http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml){:target="_blank"} by IANA
     - e.g., 1 = ICMP, 2 = IGMP, 6 = TCP, 17 = UDP, etc.
 - **Header checksum**: checksum of the header (not the data)
   - has to be recomputed on every router because of the TTL field
@@ -399,11 +401,538 @@ Two approaches: *Source Based Tree* and *Core Based Tree*.
 - **length**: the total length of the UDP packet (header + data)
 - **checksum**: the whole UDP packet checksum (header + data)
 
+#### Transmission Control Protocol (TCP)
+- provides **connection-oriented** and fully **reliable** service
+  - if possible, the data sent by the sender will be received by the receiver complete and in the right order
+  - TCP is stream-based protocol in comparison with datagram-based UDP
+- *connection* has to be established between sender and receiver prior to communication
+  - *three-way handshake*
+
+  ![tcp-handshake](/masters-security/assets/tcp_handshake.svg 'TCP handshake')
+  - connection is distinguishable on the end nodes (end-to-end service), routers are not aware of the connections
+  - an established connection might be used for full duplex communication
+  - **point-to-point** connections only
+- multiplexing/demultiplexing and error control same as in UDP
+
+![tcp-header](/masters-security/assets/tcp_header.png 'TCP header')
+- **source port**: identification of sending service/application
+- **destination port**: identification of receiving service/applicatio
+- **sequence number**: number assigned to the first byte of the data contained in the segment
+- **acknowledgement number**: byte number the received is expecting to receive in the next segment
+  - *piggybacking*: the acknowledgement is not sent immediately after receiving, but with the data that the other side wants to send
+- **header length**: total length of the TCP header in 4B words
+- **reserved**: not used for anything
+- **control**: 6 control bits
+![tcp-control-bits](/masters-security/assets/tcp_control_bits.png 'TCP control bits')
+- **window size**: size of the windows that the other party must maintain, used for *Flow Control*
+- **checksum**: checksum of the whole TCP segment
+- **urgent pointer**: used when the segment contains urgent data
+- **options**: [options](https://www.iana.org/assignments/tcp-parameters/tcp-parameters.xhtml){:target="_blank"} such as maximum segment size, selective ACK, authentication, etc.
+
+TCP controls the amount of sent data in a way that
+- *protects the receiver from being congested* (**Flow Control**)
+- *protects the network from being congested* (**Congestion Control**)
+
+The amount of data allowed to be sent to the network is defined by:
+- the receiver's window size (flow control)
+- the size of *congestion window* (congestion control), maintained on the sender size
+- amount of data allowed to be sent to the network is limited by the **lower value** of these two parameters
+
+*[TCP]: Transmission Control Protocol
+
 ### L7 - Application Layer
+- provides services to *users*
+  - application programs specific for a particular purpose (email, WWW, DNS)
+- comprises *network applications/programs* and *application protocols*
+  - application protocols (HTTP, SMTR, etc.) are parts of network applications (web, email)
+  - application protocols define:
+    - types of messages which the applications exchange (*request*/*response*)
+    - message syntax
+    - message semantics
+    - rules of when and how the mesages are exchanged
 
+*[HTTP]: Hypertext Transfer Protocol
+*[SMTP]: Simple Mail Transfer Protocol
 
-##### MPLS
-##### TE
+#### Application Classification/Distinction
+*According to employed communication model*:
+- Client-Server model - thin vs fat clients
+- Peer-to-peer model
+
+*According to the way of accessing the information*:
+- pull model - the data transfer is initiated by a client
+- push model - the data transfer is initiated by a server
+
+*According to the demands on the computer network*:
+- low vs high demands
+
+#### Examples
+- name service (DNS)
+- World-Wide-Web (HTTP)
+- electronic email (SMTP)
+- file transfer (FTP)
+- multimedia transmissions (RTP/RTCP)
+
+*[FTP]: File Transfer Protocol
+*[RTP]: Real-time Transport Protocol
+*[RTCP]: RTP Control Protocol
+
+# Advanced IPv6 Features
+Hierarchy of a network IPv6 address (128 bits):
+- first 16 bits contain the value `2001` (hexadecimal)
+- next 16 bits assigned by *Regional Internet Registry*
+- next 16 bits assigned by *Local Internet Registry*
+- last 64 bits for the interface address
+
+- IPv6 addresses are *classless* (classes do not exist, contrary to IPv4)
+- networks defined using [CIDR](https://ip.sb/cidr/){:target="_blank"} notation
+
+*[CIDR]: Classless Inter-Domain Routing
+
+## Neighbor Discovery
+Serves the same purpose as ARP for IPv4 - obtaining a physical address of a node, having its IP address
+
+### Neighbor Discovery for IP version 6
+- a part of ICMPv6
+- autoconfiguration of IPv6 address (stateful/stateless)
+- functionalities:
+  - determine network prefixes, routers and other configuration information
+  - duplicate IP address detection
+  - determine L2 addresses the same link
+  - detect changed L2 addresses
+- five ICMP messages:
+  - *Router Solicitation* (RS)
+  - *Router Advertisement* (RA)
+  - *Neighbor Solicitation* (NS)
+  - *Neighbor Advertisement* (NA)
+  - *ICMP Redirect*
+- *Inverse Neighbor Discovery* possible (RARP equivalent)
+
+Address resolution:
+- a common multicast prefix is defined (`FF02:0:0:0:0:1:FF00::/104`)
+- node looking for an L2-layer address takes last 24 bits of the IP address it is looking for and concatenates it with the prefix
+- a **Neighbor Solicitation** message is sent to such a multicast address, containing the IPv6 address being resolved and the L2 address of the sending node
+- the node belonging to the multicast group answers with a **Neighbor Advertisement** message, containing:
+  - all the IPv6 and L2 addresses the node has
+  - attribute:
+    - *R* (*Router*) - the sender is a router
+    - *S* (*Solicited*)
+    - *O* (*Override*) - whether the new information should override the old information saved
+- unsolicited NA is used when the node knows that its L2 address has changed, the messages are sent to multicast address containing all nodes (`FF02::1`)
+
+### Autoconfiguration
+- no need for a DHCP server
+- two types of autoconfigurations
+  - *stateful* - similar to DHCP, called DHCPv6
+  - *stateless* -- new type of autoconfiguration
+  - the two types may be combined
+
+#### Stateless autoconfiguration
+- routers inform periodically all nodes about the current configuration (**Router Advertisement**)
+- a new node can also ask for RA by sending **Router Solicitation**
+- router advertisement contain specific information about the router
+  - MTU
+  - network prefixes
+  - L2 address of the router's interface
+
+- to generate an IP address, a host uses a combination of local information (MAC address, random ID) and the information from router advertisements
+
+1. **Link-Local Address Generation**: the device generates a link-local address (`FE80::<64-bit-identifier>`)
+2. **Link-Local Address Uniqueness Test**: the node sends a NS and listens for a NA response (which would suggest a duplicate address)
+3. **Link-Local Address Assignment**: the device assigns the link-local to its IP interface
+4. **Router Contact**: the node attempts to contact a local router to obtain more information on continuing the autoconfiguration (either by listening to RA or sending an explicit RS to the all-routers multicast group `FF02::2`)
+5. **Router Direction**: router provides instructions on how to proceed
+   - either stateful configuration is in use, then it sends the address of a DHCP server
+   - or it instructs the hosts how to determine its global internet address
+6. **Global Address Configuration**: the host configures itself with its globally-unique address
+
+*[NS]: Neighbor Solicitation
+*[NA]: Neighbor Advertisement
+*[RS]: Router Solicitation
+*[RA]: Router Advertisement
+*[DHCP]: Dynamic Host Configuration Protocol
+
+## Mobility Support
+- **main idea**: mobile devices have their home network
+- used addresses:
+  - *Home Address* - global unicast persistent address through which a mobile node is always accessible
+  - *Care-of Address* - global unicast address whil the mobile node is in a foreign network
+- *Correspondent Node* (CN) - a peer node with which a mobile node is communicating
+- *Home Agent* (HA) - router in the home network through which the mobile node is always accessible
+  - receives datagram destined to the mobile node and forwards them to the node via a tunnel
+- *route optimization* - direct communication of the mobile and corresopnding nodes in order to optimize the communication
+  - not necessary
+
+Concept:
+- mobile node at home receives packets through regular IP routing
+- when away from the home network, the mobile node registers its care-of address with its HA
+  - the care-of address is received via a mechanism in the foreign network
+- two ways for a correspondent and mobile node to communicate
+  - *bidirectional tunneling* - HA is the man in the middle
+  - *route optimization* - binding has to be authorized through *Return Routability Procedure*
+
+*[CN]: Correspondent Node
+*[HA]: Home Agent
+
+### Return Routability Procedure
+- mobile node has to prove to CN that it owns both home address and care-of address
+  - initially performed using IPsec, but there is no PKI available for the nodes
+- the mobile node sends a *Test Init* message through HA to CN and another one directly to CN
+- it receives *Test* messages back (one through HA, one directly) and uses them to compute shared secret with the CN - *Management Key*
+- the *Management Key* is used to secure the Binding Update messages
+
+### Home Agent
+- maintains binding cache and a list of home agents
+- processes bindings
+- tunnels received packets to care-of address
+
+*[PKI]: Public Key Infrastructure
+
+## Security
+- general security mechanisms described by IPSec both for IPv4 (**optional**) and IPv6 (**mandatory**)
+- elements of IPSec:
+  - authentication protocol - AH
+  - encryption protocol - ESP header
+  - definition for use of cryptographic algorithms for encryption and authentication
+  - definition of security policies and security associations between communicating peers
+  - key management
+
+*[AH]: Authentication Header
+*[ESP]: Encapsulating Security Payload
+
+### Security Associations
+- describes a secure connection between two devices
+- three elements: key, encryption/authentication mechanism, additional parameters
+- one-way agreements (4 SA needed for both encrypted and authenticated duplex communication)
+- SA defined by three parameters
+  - *Security Parameter Index* - unique identifier of the SA
+  - *IP Destination Address* - address of the device
+  - *Security Protocol Identifier* - specified whether the association is for AH or ESP
+- to establish an SA the peers have to agree on the algorithm and the keys - *Internet Key Exchange version 2* used
+
+*[SA]: Security Association
+*[SPI]: Security Parameter Index
+
+### IPSec Modes
+- *Transport mode*
+  - the protocol protects messages inside the IP datagram
+  - message processed by AH/ESP, appropriate headers added in front of the transport header
+  - IP header in front of all of this
+- *Tunnel mode*
+  - protects a **complete encapsulated IP diagram**
+  - IPSec headers in front of the original IP header, new IP header added in front of all of this
+  - the original IP datagram is therefore encapsulated inside the new IP datagram
+
+### Authentication Header
+- provides **authentication** of either all or part of the contents of a datagram
+- addition of a header calculated based on the values in the datagram
+- a SA has to be set up between the two communicated devices
+- presence of AH allows to verify the integrity, but the datagram is **not encrypted**!
+
+### Encapsulating Security Payload
+- protects data by encrypting it: provides **privacy**
+- supports additional **authentication scheme**
+- ESP divides its fields into three components
+  - *ESP Header* - two fields (SPI and Sequence Number)
+  - *ESP Trailer* - placed after the encrypted data, contains padding used to align the encrypted data
+  - *ESP Authentication Data* - if the authentication feature is used, this contains an *Integrity Check Value* (similar to AH)
+- ESP uses stronger encryption algorithms than AH, so it is more computationally expensive
+- AH authenticates the whole diagram, ESP does not authenticate the outer IP header
+
+## QoS
+Two architectures for providing data with priorities and quality guarantees:
+1. *Integrated Services* - bandwidth and all related resources are reserved per flow on an end-to-end basis, routers store information about flows and analyze passing packets
+  - application announces the qualitative requirements to the netwrok
+  - the network checks whether the resources are available and either satisfies the request or refuses connection
+  - main drawback: necessity to maintain a state in the inner network nodes
+2. *Differentiated Services* - based on packets' markup (the packets contain a certain priority class)
+  - resource reservation protocols not necessary
+  - each packet has a tag indicating a priority class before being sent to the network
+    - *Type of Service* (IPv4) or *Traffic Class* (IPv6) fields
+    - packet processed based on the priority class
+  - main advantage: simple, no state information in the inner nodes (good scalability)
+
+### Traffic Class
+- 1 byte
+  - first 6 bits are the *DiffServ field* - specifies how packets should be forwarded
+  - last 2 bits (*Explicit Congestion Notification*) - router can signal overload before a packet loss occurs
+
+### Flow Label
+A *flow* is a sequence of related packets sent from a source to a destination.
+
+The **Flow Label** field is:
+- a 20-bit field of IPv6 which enables classification of packets belonging to a specific flow
+- IPv6 routers must handle all the packets belonging to the same flow in a similar fashion
+- open issue how to use this field efficiently
+- traditionally flow was based on the 5-tuple `(source address, destination address, source port, destination port, transport protocol type)`
+  - some of these fields may be unavailable due to fragmentation/encryption
+- IPv6 uses a triple `(flow label, source address, destination address)`
+- a Flow Label of 0 is used to indicate packets not being part of any flow
+
+# Routing
+**Routing** is the process of finding a path in the network beteeen two communicating nodes.
+- the route/path has to satisfy certain constraints
+- influenced by several factors
+  - *static*: network topology
+  - *dynamic*: network load
+
+## Path Vector Routing
+- a variant of DV routing
+- in comparison with DV whole paths are sent in the PV
+  - simple detection of loops
+  - definition of rules/policies (friendly vs. non-friendly AS)
+
+### Border Gateway Protocol
+- currently version 4
+- proposed due to internet's grow and demands on complex topologies support
+  - supports redundant topologies, deals with loops/cycles, ...
+- used to communicate information about networks residing in an AS to other autonomous systems
+  - exchange done by setting up a session between bordering AS
+  - communication channel on top of TCP (BGP relies on a fully reliable transport protocol)
+- allows a definition of routing rules (policies)
+- a hop count metric
+- CIDR for paths' aggregation
+- BGP is based on *advertisements* sent among BGP peers
+  - through TCP, port 179
+  - advertisement consists of a destination network address (CIDR notation) and path attributes
+- once paths are advertised to an AS, a *routing policy* takes place
+  - routing policy defines which ASs are allowed to transit data, the allowed AS for forwarding, etc.
+  - if a routing policy is not defined, the shortest path is chosen
+
+*[DV]: Distance Vector
+*[PV]: Path Vector
+*[AS]: Autonomous System
+*[BGP]: Border Gateway Protocol
+
+## Router Architectures
+Router must perform two tasks: *routing* and *packet forwarding*.
+- **routing process** constructs a view of the network topology and computes the best paths
+  - the paths are stored in the *forwarding table*
+- **packet forwarding process** moves a packet from an input interface (ingress) to the appropriate output interface (egress)
+  - based on the information contained in the forwarding table
+  - performance of the forwarding process determines the overall performance of the router
+
+### Forwarding Functions
+- **IP Header Validation**: every IP packet needs to be validated - the version number, header length, checksum, etc.
+- **Packet Lifetime ControL**: decrementing the TTL field, if the TTL is zero or negative, the packet is discarded and an ICMP message is generated
+- **Checksum Recalculation**: header checksum needs to be updated
+- **Route Lookup**: packet destination address used to search the forwarding table
+- **Fragmentation**: if the MTU of the outgoing link is smaller than the size of the packet being transmitted
+- **Handling IP Options**: a packet may indicate that it requires speecial processing at the router
+- **Packet Classification**: examining other IP fields - source address, destination port, source port, etc.
+- **Packet Translation**: router which is a gateway to a NAT network needs to support it
+- **Traffic Prioritization**: router might need to guarantee a certain quality of service
+
+*[NAT]: Network address translation
+
+### Routing Functions
+- **Routing Protocols**: different routing protocols (OSPF, BGP, RIP) for sending/receiving route updates
+- **System Configuration**: functions enabling the operators to configure various administrative tasks
+  - configuring the interfaces, keepalive time, rules for classifying packets, ...
+- **Router Management**: monitoring (SNMP support)
+
+### Router Elements
+- *Network Interfaces*
+  - a network interface contains many ports providing connectivity to physical network links (Ethernet)
+- *Forwarding Engines*
+  - responsible for deciding to which network interface the packet should be forwarded
+  - consulting the *forwarding table* = **Address Lookup**
+- *Queue Manager*
+  - provides buffers for temporary storage of packets when an outgoing link from a router is overbooked
+  - selectively dropping packets on buffer overflow
+- *Traffic Manager*
+  - responsible for prioritizing and regulating the outgoing traffic, depending on the desired level of service
+- *Backplane*
+  - provides connectivity for the network interfaces
+- *Route Control Processor*
+  - responsible for implementing and executing routing protocols
+    - maintains a *routing table* that is updated when a route change occurs
+    - *forwarding table* is computed based on the contents of the routing table
+  - performs complex packet-by-packet operations (handling errors during packet processing)
+
+*[SNMP]: Simple Network Management Protocol
+
+### Address Lookup
+1. Classful addressing: forwarding is straightforward
+  - only the network part of the destination part needs to be examined
+  - single entry for routing packets to all the hosts attached to a given network
+2. Classless addressing (CIDR): more difficult
+  - destination IP address does not carry the netmask information
+  - prefixes in the forwarding table being matched with the destination address can have arbitrary length
+
+#### Longest Prefix Matching
+Linear search is too slow (linear), trie-based algorithms can be used.
+
+Other approaches:
+- search by length
+- search by value
+- hardware algorithms
+
+## Traffic Engineering
+Traffic Engineering is about discovering what other paths and links are available in the network, what the current traffic usage is within the network, and directing traffic to routes other than the shortest so optimal use of resources in the network is made.
+
+Achieved by a combination of:
+- extensions to existing IGP protocols
+- traffic monitoring tools
+- traffic routing techniques
+
+*[TE]: Traffic Engineering
+
+### Steps
+1. traffic measurements are collected
+  - SNMP, NetFlow
+2. topology and configuration is obtained from the network
+3. a link weight determination process determines linnk weights
+
+How often to update the link weights?
+- usually once a day, once a week - up to the administrator
+
+*[IGP]: Interior Gateway Protocol
+
+TE needs to solve constraint programming/linear programming problem of *minimizing the maximum link utilization*.
+
+## Multiprotocol Label Switching
+MPLS is a forwarding mechanism presented as a way of improving the forwarding speed of core IP routers.
+- in MPLS network, packets are forwarded based on *labels*
+  - a label is added in front of a packet
+  - internal MPLS routers dont' inspect packets' IP addresses
+  - labels usually correspond to IP destination networks
+    - but can correspond to other parameters such as QoS or source address
+  - new protocols to distribute label information
+- MPLS flows are *connection-oriented* and packets are routed along pre-configured Label Switched Paths (LSPs)
+  - LSP is unidirectional
+- MPLS allows new forwarding paradigms not available with conventional IP routing
+  - ability of network operators to dictate the path, VPN support, etc.
+- standard technology for large-scale IP networks
 
 *[MPLS]: Multiprotocol Label Switching
-*[TE]: Traffic Engineering
+*[LSP]: Label Switched Path
+*[VPN]: Virtual Private Network
+
+### Basic functionality
+- analysis of packets entering the network and their classification to FEC classes
+- labels' creation for all the FEC classes
+- determination/creation of *Label Switched Paths*
+- labels' distribution
+- setting the forwarding information tables in the routers
+  - *Label Information Base* (LIB) or *Label Forwarding Base* (LFB)
+  - tables map `{incoming_interface, incoming_label}` to `{outgoing_interface, outgoing_label}`
+- packets' forwarding based on the label
+- MPLS header (shim header) creation
+
+*[FEC]: Forward Equivalence Class
+
+### Network Components
+#### Edge Label-Switched Routers
+- border routers
+- *Ingress-LSR*:
+  - analyses information in IP packet header
+  - based on analysed information the packet is assigned to particular FEC
+  - depending on the assigned FEC, a proper label is inserted into the MPLS header
+- *Egress-LSR*:
+  - removes MPLS header and forwards the original IP packet to an egress link
+  - decrements packet's TTL field
+
+*[LSR]: Label-Switched Router
+
+#### Core Label-Switcher Routers
+- ensure packets' forwarding based on the assigned label
+- the IP header is neither modified nor analysed by the Core-LSRs, just the MPLS labels
+
+### Traffic Engineering in MPLS
+- MPLS has the ability to establish an LSP that follows an arbitrary path (not the path preferred by the routing protocol)
+- resources inside the MPLS network can be dynamically reserved and updated
+  - guarantee of QoS for traffic flows
+- load-sharing and traffic grooming are made just at the entry point into the LSP
+
+# TCP and TCP Variants
+Traditional TCP is not suitable for network links with *high capacity* and *high latency*.
+
+## Traditional TCP
+Final window is the minimum of the flow control window (`rwnd`, deterministic) and the congestion control window (`cwnd`, estimate)
+
+$$\text{ownd} = \min\{\text{rwnd}, \cwnd\}$$
+
+The bandwidth $\text{bw}$ can be computed as
+
+$$\text{bw} = \frac{8 \cdot \text{MSS} \cdot \text{ownd}}{\text{RTT}}$$
+
+where MSS is the maximum segment size and RTT is the round-trip time.
+
+### Congestion Control
+- *AIMD - Additive Increase Multiplicative Decrease* approach
+- TCP **Tahoe**:
+  - $\cwnd = \cwnd + 1$ per RTT without loss (above $\text{ssthresh}$)
+  - $\text{sstresh} = \cwnd/2, cwnd = 1$ per every loss
+- TCP **Reno** adds:
+  - *fast retransmission*
+    - a TCP receiver sends immediate duplicate ACK when an out-of-order segment arrives
+    - loss indicated by 3 duplicate ACKs
+      - once received, TCP performs a fast retransmission without waiting for the retransmission timer to expire
+  - *fast recovery* - slow start phase not used anymore
+    - $\text{sstresh} = \cwnd = \cwnd/2$
+
+## Multi-stream TCP
+- assumes multiple TCP streams transferring a single data flow
+- improves TCP's performance/behavior in cases of *isolated packet losses*
+- simple implementation: bbftp, GridFTP, Internet Backplane Protocol, ...
+- drawbacks:
+  - more complicated than traditional TCP (more threads necessary)
+  - startup accelerated linearly
+  - leads to *synchronous overloading of queues and caches in the routers*
+
+## TCP Implementation Tuning
+- *cooperation with hardware*
+  - Rx/Tx TCP Checksum Offloading
+- *zero copy*
+  - user-land <-> kernel <-> network card usually leads to multiple copies of the pacets
+  - page flipping - user-land <-> kernel data movement
+
+## Conservative Extensions to TCP
+### GridDT
+- a collection of ad-hoc modifitactions
+- just the sender side has to be modified
+- updated congestion control
+- faster slowstart
+
+### High-Speed TCP (HSTCP)
+- congestion control is AIMD/MIMD:
+  - $\cwnd = \cwnd + a(\cwnd)$ per RTT without loss
+  - $\cwnd = \cwnd + \frac{a(\cwnd)}{\cwnd}$ per ACK
+  - $\cwnd = b(\cwnd) \cwnd$ per packet loss
+- emulates the behavior of traditional TCP for small window sizes and/or higher packet loss rates in the network
+- doesn't deal with the slow-start phase in a sophisticated way
+
+*[AIMD]: Additive Increase Multiplicative Decrease
+*[MIMD]: Multiplicative Increase Multiplicative Decrease
+
+### BIC-TCP
+- was the default for Linux kernels, replaced by CUBIC-TCP
+- binary-search algorithm for the $\cwnd$ update
+- 4 phases:
+  1. reaction to packet loss
+  2. additive increase
+  3. binary search
+  4. maximum probing
+
+*[BIC]: Binary Increase Congestion
+
+### CUBIC-TCP
+- BIC's growth function considered to be still aggressive for TCP
+- default TCP congestion algorithm for the Linux kernel and Windows 10/11 since 2017
+- uses a cubic function
+
+### TCP BBR
+BBR is model based like TCP Vegas.
+- used for TCP traffic from google.com and youtube.com
+- supposedly has fairness issues to non-BBR streams
+
+*[BBR]: Bottleneck Bandwidth and Round-trip propagation time
+
+### Approaches Different from TCP
+#### tsunami
+- TCP connection for out-of-band control channel
+  - parameter negotiation, retransmissions - NACK
+- UDP channel for data transmission
+  - MIMD congestion control
+  - highly configurable/customizable
