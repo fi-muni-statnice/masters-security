@@ -3,6 +3,7 @@ title: Probability, Theory of Information
 author: John Doe
 category: Information Security
 layout: post
+mermaid: true
 ---
 
 $\def\F{\mathscr{F}}
@@ -311,13 +312,13 @@ I(X; Y) &= - H(X, Y) + H(X) + H(Y \st X) + H(Y) - H(Y \st X) \\
 # Coding Theory
 We model the **source** of information as a random variable $X$ with all possible messages equal to $\Im(X)$. The source emits the message $x$ with probability $P(X = x)$. A sequence of messages is created by a sequence of independent trials described by $X$ and thus by a random process $X_1, X_2, \dots$ where $X_i$ are i.i.d. - a **memoryless source**.
 
-> A **code** $C$ for a random variable (memoryless source) $X$ is a mapping $C: \Im(X) \to D^*$, where $D^*$ is the set of all finite-length strings over the alphabet $D$. With $\abs{D} = d$, we say the code is $d$-ary, $C(x)$ is the codeword assigned to $x$ and $l_C(x)$ denotes the length of $C(x)$.
+> A **code** $C$ for a random variable (memoryless source) $X$ is a mapping $C: \Im(X) \to D^{\*}$, where $D^*$ is the set of all finite-length strings over the alphabet $D$. With $\abs{D} = d$, we say the code is $d$-ary, $C(x)$ is the codeword assigned to $x$ and $l_C(x)$ denotes the length of $C(x)$.
 {: .block-tip}
 
 > The expected length $L_C(X)$ of a code $C$ for a random variable $X$ is given by
 >
 > $$L_C(X) = \sum_{x \in \Im(X)}{P(X = x) l_C(x) = E[l_C(X)]}$$
-> {: .block-tip}
+{: .block-tip}
 
 We will assume (WLOG) that the alphabet is $D = \set{0, 1, \dots, d - 1}$.
 
@@ -328,8 +329,144 @@ We will assume (WLOG) that the alphabet is $D = \set{0, 1, \dots, d - 1}$.
 > $$\forall x, y \in \Im(X) . x \not= y \Rightarrow C(x) \not= C(y)$$
 {: .block-tip}
 
+Non-singularity allows **decoding of any single keyword**, but in practice we need to be able to decode a **sequence of keywords**.
 
+Let $\Im(X)^+$ denote the set of all nonempty strings over the alphabet $\Im(X)$.
+
+> An **extension** $C^{\*}$ of a code $C$ is the mapping from $\Im(X)^+$ to $D^{\*}$ defined by
+>
+> $$C^{\*}(x_1 x_2 \dots x_n) = C(x_1)C(x_2)\dots C(x_n)$$
+>
+> A code is **uniquely decodable** iff its extension is non-singular.
+{: .block-tip}
+
+A uniquely decodable code has only one possible source string for every encoded string.
+
+> A code is called a **prefix code** if no codeword is a prefix of any other keyword.
+{: .block-tip}
+
+All prefix codes are trivially uniquely decodable, moreover a codeword can be decoded as soon we read its last symbol.
+
+### Kraft Inequality
+> For any **prefix code** over an alphabet of size $d$, the codeword lengths (including multiplicities) $l_1, l_2, \dots, l_m$ satisfy
+>
+> $$\sum_{i = 1}^m{d^{-l_i}} \leq 1$$
+>
+> Conversely, given a sequence of codeword lengths that satisfy this inequality. there exists a prefix code with these codeword lengths.
+{: .block-tip}
+
+#### Proof
+> Consider a $d$-ary tree in which every inner node has $d descendants. Each edge represents a choice of a code alphabet symbol at a particular position. **Each codeword is represented by a node** (does not hold the other way) and the path from the root to a particular node (codeword) specifies the codeword symbol. The prefix condition implies that no codeword is an ancestor of another codeword on the three.
+>
+> Let $l_{\max} = \max\set{l_1, l_2, \dots, l_m}$. Consider all nodes of the tree at the level $l_{\max}$. A codeword at level $l_i$ has $d^{l_{\max} - l_i}$ descendants at level $l_{\max}$. Sets of descendants of different codewords must be disjoint and the total number of nodes in all these sets must be at most $d^{l_{\max}}$. Summing over all codewords we have
+>
+> $$\sum_{i = 1}^m{d^{l_{\max} - l_i}} \leq d^{l_{\max}}$$
+>
+> and hence
+>
+> $$\sum_{i = 1}^m{d^{-l_i}} \leq 1.$$
+>
+> Conversely, given any set of codeword lengths $l_1, l_2, \dots, l_m$ satisfying the Kraft inequality we can always construct a tree described above. We may WLOG assume that $l_1 \leq l_2 \leq \cdots \leq l_m$.
+>
+> Label the first note of depth $l_1$ as the codeword $1$ and remove its descendants from the tree. Then mark first remaining node of depth $l_2$ as the codeword $2$. Continue for all the remaining nodes. We need to show there is enough nodes for this algorithm to work.
+>
+> Assume that for some $i \leq m$ there is no free node of level $l_i$ when we want to add a new codeword of length $l_i$. This, however, means that all nodes at level $l_i$ are either codewords or descendants of a codeword, giving
+>
+> $$\sum_{j = 1}^{i - 1}{d^{l_i - l_j}} = d^{l_i}$$
+>
+> which is equivalent to $\sum_{j=1}^{i - 1}{d^{-l_j}} = 1$. But we still have the codeword $i$ to add, meaning $\sum_{j = 1}^i {d^{-l_j}} > 1$, violating the initial assumption.
+
+### McMillan Inequality
+> For any **uniquely decodable** over an alphabet of size $d$, the codeword lengths (including multiplicities) $l_1, l_2, \dots, l_m$ satisfy
+>
+> $$\sum_{i = 1}^m{d^{-l_i}} \leq 1$$
+>
+> Conversely, given a sequence of codeword lengths that satisfy this inequality. there exists a uniquely decodable code with these codeword lengths.
+{: .block-tip}
+
+### Optimal Codes
+The task is to find the prefix code with the minimum expected length.
+
+> The **expected length of any prefix $d$-ary code** $C$ for a random variable $X$ is greater than or equal to the entropy $H_d(X)$ ($d$ is the base of the logarithm), i.e.
+>
+> $$L_C(X) \geq H_d(X)$$
+>
+> with equality iff for all $x_i$: $P(X = x_i) = p_i = d^{-l_i}$ for some integer $l_i$ (a $d$-adic distribution).
+{: .block-tip}
+
+### Naive Shannon-Fano Coding
+> Choose word lengths such that
+>
+> $$l_i = \left\lceil\log_d\left(\frac{1}{p_i}\right)\right\rceil$$
+{: .block-danger}
+
+Shannon-Fano Coding is not optimal!
+
+The choice of codeword lengths satisfies
+
+$$\log_d \frac{1}{p_i} \leq l_i < \log_d{\frac{1}{p_i}} + 1$$
+
+Taking expectation over $p_i$ on both sides, we get
+
+$$H_d(X) \leq L_C(X) < H_d(X) + 1$$
 
 ## Huffman Codes
+The $d$-ary Huffman code for source described by the random variable $X$ with probability distribution $p_1, p_2, \dots, p_m$ is constructed by the following steps:
+- Add redundant input symbols with probability $0$ to the distribution so that the distribution has $1 + k(d - 1)$ symbols for some $k$
+- Take a list of symbols and their probabilities.
+- Select $d$ symbols with the lowest probabilities (if multiple symbols have the same probability, select $d$ arbitrarily).
+- Create a $d$-ary tree out of these $d$ symbols, labeling branches​ with $\set{0, \dots, d-1}$ consecutively.
+- Add the probabilities of the $d$ symbols to get the probability of the new subtree.
+- Remove the symbols from the list and add the subtree to the list.
+- Go back through the list and take the $d$ symbols/subtrees with the smallest probabilities and combine those into a new subtree. Remove the original symbols/subtrees from the list, and add the new subtree to the list.
+- Repeat until all of the elements are combined.
 
-## Noisy Channel Capacity
+**Huffman codes are optimal**, i.e. the codes obtained by the Huffman algorithm assigns codewords of same lengths as optimal ones.
+
+## Channels
+> A **discrete channel** is a system $(X, p(y \st x), Y)$ consisting of an input alphabet $X$, output alphabet $y$, and a probability transition matrix $p(y \st x)$ specifying the probability we observe $y \in Y$ when $x \in X$ was sent.
+{: .block-tip}
+
+**Example**: Binary symmetric channel preserves its input with probability $1 - p$ and outputs the negation of the input with probability $p$.
+
+![binary-symmetric-channel](/masters-security/assets/binary_symmetric_channel.png 'Binary Symmetric Channel'){:height="250"}
+
+Let $x^k = x_1, x_2, \dots x_k, X^k = X_1, X_2, \dots, X_k$.
+
+> A channel is said to be **without feedback** if the output distribution does not depend on past output symbols, i.e. $p(y_k \st x^k, y^{k-1}) = p(y_k \st x^k)$
+>
+> A channel is said to be **memoryless** if the output distribution depends only on the current input and is conditionally independent of previous channel inputs and outputs, i.e. $p(y_k \st x^k, y^{k-1}) = p(y_k \st x_k)$.
+{: .block-tip}
+
+> The **$n$-th extension** of the discrete **memoryless** channel is the channel $(X^n, p(y^n \st x^n), Y^n)$, where
+>
+> $$p(y_k \st x^k, y^{k-1}) = p(y_k \st x_k)$$
+>
+> for $k = 1, 2, \dots, n$.
+{: .block-tip}
+
+> An $(M, n)$ **code** for the channel $(X, p(y \st x), Y)$ consists of the following:
+> 1. A set of input messages $\set{1, 2, \dots, M}$.
+> 2. An encoding function $f: \set{1, 2, \dots, M} \to X^n$ , yielding codewords $f(1), f(2), \dots, f(M)$.
+> 3. A decoding function $g: Y^n \to \set{1, 2, \dots, M}$, which is a deterministic rule assigning a guess to each possible receiver vector.
+{: .block-tip}
+
+> The **rate** $R$ of an $(M, n)$ code is
+>
+> $$R = \frac{\log_2 M}{n}$$
+>
+> bits per transmission.
+{: .block-tip}
+
+## Channel Capacity
+> The **channel capacity** of a discrete memoryless channel is
+>
+> $$C = \max_{p_X}{I(X; Y)}$$
+>
+> where $X$ is the input random variable, $Y$ describes the output distribution and the maximum is taken over all possible input distributions $p_X$.
+{: .block-tip}
+
+## Channel Coding Theorem
+> Let $C$ be a capacity of a communication channel and $R$ be a code rate.
+> - If $R < C$, then for any $\varepsilon > 0$ there exists a code with rate $R$ (and large enough block length $n$) whose error probability $\lambda_{\max}$ is less than $\varepsilon$.
+> - If $R > C$, the error probability $\lambda_{\max}$ of any code with rate $R$ is bounded away from zero.
