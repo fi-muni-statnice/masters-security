@@ -534,18 +534,120 @@ For testing equality of means of more than two groups, we cannot repeatedly invo
 - **Test statistic**: $T = \sqrt{n}\frac{\bar{Z}}{S}$
 
 ## ANOVA
+We want to find out whether means of $k$ groups are equal, but if we wanted to use $t$-tests for every pair, we would need to do $k \choose 2 = c$ of the tests. For that we would need to set the confidence level of every test to $\frac{\alpha}{c}$, which makes the test procedure too conservative and the tests will have small power. ANOVA helps us to fix the problem.
+
 - **Model:**
   - $X_{1,1}, \dots, X_{1, n_1}$ is a random sample from $\mc{N}(\mu_1, \sigma^2)$
   - $X_{2,1}, \dots, X_{2, n_2}$ is a random sample from $\mc{N}(\mu_2, \sigma^2)$
   - $\vdots$
   - $X_{k,1}, \dots, X_{k, n_k}$ is a random sample from $\mc{N}(\mu_k, \sigma^2)$
-  - all samples mutually independent
+  - all samples mutually independent, **normality**, **same variances** (homoscedasticity)
   - $n = n_1 + \dots + n_k$
 - **Null hypothesis**: $H_0: \mu_1 = \mu_2 = \dots = \mu_k$
   - $H_1: \mu_i \not= \mu_j$ for at least one pair $i \not= j$.
+- If $H_0$ is rejected, then we want to know which groups differ. ANOVA will not tell us that, but we can use post-hoc tests.
+
+> - $$\text{SS}_T = \sum_{i = 1}^k \sum_{j = 1}^{n_i} (X_{i, j} - \bar{X})^2$$ is called **total sum of squares**,
+> - $$\text{SS}_W = \sum_{i = 1}^k \sum_{j = 1}^{n_i} (X_{i, j} - \bar{X_i})^2$$ is called **within-group (residual) sum of squares**,
+> - $$\text{SS}_B = \sum_{i = 1}^k n_i (\bar{X}_i - \bar{X})^2$$ is called **between-group sum of squares**.
+>
+> $$\text{SS}_T = \text{SS}_W + \text{SS}_B$$
+{: .block-tip}
+
+$\frac{\text{SS}_W}{n - k}$ is an unbiased estimate of $\sigma^2$. $\frac{\text{SS}_B}{k - 1}$ is an unbiased estimate of $\sigma^2$ **only under $H_0$**. The idea is to compare these two estimates using $F$-test:
+- **Test statistic**: $F = \frac{\text{SS}_B / (k - 1)}{\text{SS}_W / (n - k)}$ (under $H_0$, $F \sim F(k - 1, n - k)$)
+
+![k-sample-problem](/masters-security/assets/k_sample_problem.png 'k Sample Problem'){:height="300"}
 
 ## Post-hoc Tests
+Post-hoc test is a test that is specified after the data were already analyzed by a different kind of test. For example, ANOVA made us reject the null hypothesis that the means of all the groups are the same, and now we want to know exactly which groups statistically differ.
+
+### Tukey's HSD
+*[HSD]: honestly significant difference
+
+**Test statistic**: $Q_{i, j} = \frac{\abs{\bar{X}_i - \bar{X}_j}}{S \sqrt{\frac{1}{2n_i} + \frac{1}{2n_j}}}$
+  - under $H_0$, follows the *studentized range distribution*
 
 in one sample, two samples, more than two samples (including one sample, two sample and paired t-tests, ANOVA and post-hoc tests), goodness-of-fit tests.
 
+Another post-hoc test used after ANOVA is for example Scheffé Test.
+
+## There is Only One Test
+An interesting [article to read](https://allendowney.blogspot.com/2016/06/there-is-still-only-one-test.html){:target="_blank"} - Monte Carlo simulation is **probably enough for your hypothesis testing needs** (and waaay easier to understand than these 'arbitrarily-chosen' super complicated test statistics).
+
 # Linear Regression Model
+- One of the most popular and used statistical methods.
+- Modelling the relationship between a numerical response and one or more explanatory variables.
+
+- Denote $$\bf{X} = \begin{pmatrix}
+1 & x_{1,1} & x_{1_2} & \cdots & \cdots & x_{1, p} \\
+1 & x_{2,1} & x_{2_2} & \cdots & \cdots & x_{2, p} \\
+\vdots & \vdots & \ddots & \ddots & \vdots & \vdots \\
+1 & x_{n,1} & x_{n_2} & \cdots & \cdots & x_{n, p} \\
+\end{pmatrix}$$ the design matrix.
+- $\bf{Y} = (Y_1, \dots, Y_n)^T$ is the target/response variable (dependent variable, numerical)
+- **Linear regression model**:
+
+    $$Y_i = \beta_0 + \beta_1 x_{i, 1} + \beta_2 x_{i, 2} + \dots + \beta_p x_{i, p} + e_i = \bf{x}_i^T \bf{\beta} + e_i,$$
+    $i = 1, \dots, n.$
+- $\beta = (\beta_0, \beta_1, \dots, \beta_p)^T$ is the vector of unknown parameters,
+- $e_i$ - (random) model error
+- $\bf{x}_i = (1, x_{i, 1}, x_{i, 2}, \dots, x_{i, p})^T$ - vector of regressors, predictors, input variables (independent variables, numerical/categorical)
+
+## Model Assumptions
+- Expectation of model errors is zero (no systematic error).
+- Variance of model errors is constant (homoscedasticity).
+- Model errors are independent and have normal distribution.
+- $e_1, \dots, e_n$ is a random sample from $\mc{N}(0, \sigma^2)$.
+- Expectation of $Y_i$ is a linear function of unknown parameters, i.e.
+
+    $$\E Y_i = \beta_0 + \beta_1 x_{i, 1} + \beta_2 x_{i, 2} + \dots + \beta_p x_{i, p}$$
+- Regressors are not affected by random errors.
+- There are no outliers in our data.
+
+## Least Squares Estimate
+- $\hat{\beta} = \arg\min\set{\sum_{i = 1}^n (Y_i - \bf{x}_i^T \bf{b})^2 : \bf{b} \in \R^{p + 1}}$
+- If the rank of $\bf{X}$ is $p + 1$, then $\hat{\beta} = (\bf{X}^T \bf{X})^{-1} \bf{X}^T \bf{Y}$
+- $$\hat{Y}_i = \bf{x}_i^T \hat{\beta} = \hat{\beta_0} + \hat{\beta_1}x_{i, 1} + \dots + \hat{\beta_p} x_{i, p}$$.
+
+If the rank of $\bf{X}$ is $p + 1$, then
+- $\hat{\beta}$ is the best unbiased linear estimate of $\beta$,
+- $\hat{\beta} \sim \mc{N}_{p + 1}(\beta, \sigma^2 (\bf{X}^T \bf{X})^{-1})$.
+- $T_j = \frac{\hat{\beta_j} - \beta_j}{S \sqrt{v_{j, j}}} \sim t(n - p - 1)$, where $\bf{V} = (\bf{X}^T\bf{X})^{-1}$ has element $(v_{i, j})$
+
+## Test of Influence
+- We can test whether a particular regressor has an influence on the response or not.
+- **Test statistic**: $T_j = \frac{\hat{\beta_j}}{S \sqrt{v_{j, j}}}$
+  - under $H_0$, the test statistic $T_j \sim t(n - p - 1)$
+- if we want to test $\beta_i = 0$ and $\beta_j = 0$ simultaneously, we cannot use this test, but **test of a submodel**
+
+*[rank]: maximal number of linearly independent columns of a matrix
+
+## Test of a Submodel
+- The question: Can we reduce the full model with design matrix $\bf{X}$ to submodel with design matrix $\bf{X}_0$?
+- $H_0$: The submodel is true.
+
+## Coefficient of Determination
+$$R^2 = 1 - \frac{\sum_{i = 1}^n (Y_i - \hat{Y_i})^2}{\sum_{i = 1}^n (Y_i - \bar{Y_i})^2}$$
+
+Indicates the proportion of the variance in response that is explained by the model.
+- $R^2$ increases when a new predictor is added to the model, even if the new predictor is not associated with the outcome.
+  - We can use the adjusted coefficient of determination, which penalizes for the number of predictors included in the model.
+
+## Interpretation
+- $\beta_0$ is an intercept - the expected value of $Y_i$ when values of all regressors $X_i$ are equal to $0$.
+- $\beta_j$ is the expected change in $Y_i$ when the value of the $j$-th regressor is changed for one unit, while other regressors are fixed.
+
+## Linear Regression - Remarks
+- **Disadvantages**:
+  - Very strong assumptions.
+  - Sensitive to leverage observations and outliers.
+  - Unstable for strongly correlated regressors.
+  - Cannot deal with missing values.
+  - Works globally.
+- **Advantages**:
+  - Simple interpretation.
+  - Direct quantification of the influence of individual regressor on the response.
+  - Many generalizations.
+  - Can deal with both numerical and categorical variables.
+  - Does not suffer from the curse of dimensionality.
