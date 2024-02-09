@@ -16,10 +16,10 @@ $\def\F{\mathscr{F}}
 \def\set#1{\\{#1\\}}
 \def\condset#1#2{\\{#1~|~#2\\}}$
 
+Probability. Discrete and continuous probability space. Random variables and their use. Mean value, variance. Stochastic processes, Markov chains. Theory of information (entropy, mutual information), coding theory (Huffman codes, noisy channel capacity). (IV111)
+
 #### Other Sources
 - [https://hackmd.io/@uizd-suui/SybcNHPGL](https://hackmd.io/@uizd-suui/SybcNHPGL){:target="_blank"}
-
-Probability. Discrete and continuous probability space. Random variables and their use. Mean value, variance. Stochastic processes, Markov chains. Theory of information (entropy, mutual information), coding theory (Huffman codes, noisy channel capacity). (IV111)
 
 > **Random experiment** is a model of physical or thought experiment, where we are uncertain about **outcomes** of the experiment. It is specified by the **set of possible outcomes** and **probabilities** that each particular outcome occurs.
 {: .block-tip}

@@ -596,7 +596,7 @@ An interesting [article to read](https://allendowney.blogspot.com/2016/06/there-
     $i = 1, \dots, n.$
 - $\beta = (\beta_0, \beta_1, \dots, \beta_p)^T$ is the vector of unknown parameters,
 - $e_i$ - (random) model error
-- $\bf{x}_i = (1, x_{i, 1}, x_{i, 2}, \dots, x_{i, p})^T$ - vector of regressors, predictors, input variables (independent variables, numerical/categorical)
+- $$\bf{x}_i = (1, x_{i, 1}, x_{i, 2}, \dots, x_{i, p})^T$$ - vector of regressors, predictors, input variables (independent variables, numerical/categorical)
 
 ## Model Assumptions
 - Expectation of model errors is zero (no systematic error).

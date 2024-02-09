@@ -11,4 +11,4 @@ Attacks on cryptographic systems and protocols. Use of hardware for protection o
 - [https://hackmd.io/@rsss-statnice2022/rJeSLJ9dq](https://hackmd.io/@rsss-statnice2022/rJeSLJ9dq){:target="_blank"}
 - [http://statnice.dqd.cz/mgr-szz:in-bit:10-bit](http://statnice.dqd.cz/mgr-szz:in-bit:10-bit){:target="_blank"}
 
-#### Birthday Paradox
+Padding oracle attack
