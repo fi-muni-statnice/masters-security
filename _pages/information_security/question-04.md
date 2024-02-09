@@ -470,3 +470,6 @@ Let $x^k = x_1, x_2, \dots x_k, X^k = X_1, X_2, \dots, X_k$.
 > Let $C$ be a capacity of a communication channel and $R$ be a code rate.
 > - If $R < C$, then for any $\varepsilon > 0$ there exists a code with rate $R$ (and large enough block length $n$) whose error probability $\lambda_{\max}$ is less than $\varepsilon$.
 > - If $R > C$, the error probability $\lambda_{\max}$ of any code with rate $R$ is bounded away from zero.
+
+## Other Sources
+- [https://hackmd.io/@uizd-suui/SybcNHPGL](https://hackmd.io/@uizd-suui/SybcNHPGL){:target="_blank"}

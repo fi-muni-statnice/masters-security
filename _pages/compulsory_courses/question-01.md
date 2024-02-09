@@ -396,3 +396,6 @@ Methods:
 - ISO/IEC 15504 (SPICE)
 - ISO 9001
 - Personal Software Process
+
+## Other Sources
+- [https://hackmd.io/@rsss-statnice2022/BkZiek-Yq](https://hackmd.io/@rsss-statnice2022/BkZiek-Yq){:target="_blank"}

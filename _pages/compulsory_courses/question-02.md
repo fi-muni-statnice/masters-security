@@ -438,3 +438,7 @@ The **discrete logarithm** problem over elliptic groups is: Given a group $(E, +
 - [Boneh-Shoup, Chapter 4](https://toc.cryptobook.us/){:target="_blank"}
 - [Pseudorandom functions from pseudorandom generators and CPA security](https://intensecrypto.org/public/lec_05_prf-from-prg.html){:target="_blank"}
 - [Evaluation of Some Blockcipher Modes of Operation](https://web.cs.ucdavis.edu/~rogaway/papers/modes.pdf){:target="_blank"}
+
+# Other Sources
+- [https://hackmd.io/@rsss-statnice2022/BJNOs7cu9](https://hackmd.io/@rsss-statnice2022/BJNOs7cu9){:target="_blank"}
+- [http://statnice.dqd.cz/mgr-szz:in-bit:2-bit](http://statnice.dqd.cz/mgr-szz:in-bit:2-bit){:target="_blank"}

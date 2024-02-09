@@ -936,3 +936,7 @@ BBR is model based like TCP Vegas.
 - UDP channel for data transmission
   - MIMD congestion control
   - highly configurable/customizable
+
+## Other Sources
+- [https://hackmd.io/@rsss-statnice2022/B1jgkpqP5](https://hackmd.io/@rsss-statnice2022/B1jgkpqP5){:target="_blank"}
+- [http://statnice.dqd.cz/mgr-szz:in-ins:5-ins](http://statnice.dqd.cz/mgr-szz:in-ins:5-ins){:target="_blank"}

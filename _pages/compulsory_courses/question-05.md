@@ -651,3 +651,7 @@ Indicates the proportion of the variance in response that is explained by the mo
   - Many generalizations.
   - Can deal with both numerical and categorical variables.
   - Does not suffer from the curse of dimensionality.
+
+## Other Sources
+- [https://hackmd.io/@rsss-statnice2022/HJUCMYOd5](https://hackmd.io/@rsss-statnice2022/HJUCMYOd5){:target="_blank"}
+- [https://hackmd.io/_7a3hiIPR6Swq8rXUrijgw](https://hackmd.io/_7a3hiIPR6Swq8rXUrijgw){:target="_blank"}
