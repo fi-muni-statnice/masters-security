@@ -23,6 +23,10 @@ $\def\F{\mathscr{F}}
 
 Descriptive statistics (measures of location and spread, order statistics, statistics of association, related figures). Discrete and continuous random variables (RV). Random sampling. Parametric probabilistic models (distributions) of RV. Central limit theorem. Likelihood principle, point and interval estimates. Statistical inference – hypotheses testing, significance level, confidence coefficient. Testing of hypotheses in one sample, two samples, more than two samples (including one sample, two sample and paired t-tests, ANOVA and post-hoc tests), goodness-of-fit tests. Linear regression model. (MV013)
 
+#### Other Sources
+- [https://hackmd.io/@rsss-statnice2022/HJUCMYOd5](https://hackmd.io/@rsss-statnice2022/HJUCMYOd5){:target="_blank"}
+- [https://hackmd.io/_7a3hiIPR6Swq8rXUrijgw](https://hackmd.io/_7a3hiIPR6Swq8rXUrijgw){:target="_blank"}
+
 # Descriptive Statistics
 ## Statistical Data Types
 - **nominal** (sex, region, type of faults, ...)
@@ -651,7 +655,3 @@ Indicates the proportion of the variance in response that is explained by the mo
   - Many generalizations.
   - Can deal with both numerical and categorical variables.
   - Does not suffer from the curse of dimensionality.
-
-## Other Sources
-- [https://hackmd.io/@rsss-statnice2022/HJUCMYOd5](https://hackmd.io/@rsss-statnice2022/HJUCMYOd5){:target="_blank"}
-- [https://hackmd.io/_7a3hiIPR6Swq8rXUrijgw](https://hackmd.io/_7a3hiIPR6Swq8rXUrijgw){:target="_blank"}

@@ -7,6 +7,9 @@ layout: post
 
 Quality in software development. Software measurement and metrics. Clean Code & SOLID principles. Code testing; unit tests, integration tests, user and acceptance testing. Performance engineering and testing. Development methods based on testing. Software quality management process. (PV260)
 
+#### Other Sources
+- [https://hackmd.io/@rsss-statnice2022/BkZiek-Yq](https://hackmd.io/@rsss-statnice2022/BkZiek-Yq){:target="_blank"}
+
 ## Quality in Software Development
 Quality Criteria:
 - **Reliability** – The probability of correct/failure-free system operation.
@@ -396,6 +399,3 @@ Methods:
 - ISO/IEC 15504 (SPICE)
 - ISO 9001
 - Personal Software Process
-
-## Other Sources
-- [https://hackmd.io/@rsss-statnice2022/BkZiek-Yq](https://hackmd.io/@rsss-statnice2022/BkZiek-Yq){:target="_blank"}

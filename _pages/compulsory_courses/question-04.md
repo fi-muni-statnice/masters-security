@@ -9,6 +9,10 @@ $\def\cwnd{\text{cwnd}}$
 
 Computer networks. Network models and their layers, their functionality, interaction, standardization. Protocols at network layer, IPv4 features, advanced IPv6 features, address space. Routing: routers and their architecture, routing algorithms, families of routing algorithms, multicast routing, MPLS, TE. Transport protocols: UDP, properties of TCP and its variants, transport protocols for high-speed networks. (PA191)
 
+#### Other Sources
+- [https://hackmd.io/@rsss-statnice2022/B1jgkpqP5](https://hackmd.io/@rsss-statnice2022/B1jgkpqP5){:target="_blank"}
+- [http://statnice.dqd.cz/mgr-szz:in-ins:5-ins](http://statnice.dqd.cz/mgr-szz:in-ins:5-ins){:target="_blank"}
+
 # Computer Networks
 - a group of computers and devices interconnected by communication channels that facilitate communications among users and allows users to share resources
 - purposes: facilititating communications, sharing hardware, files, data, information, software
@@ -936,7 +940,3 @@ BBR is model based like TCP Vegas.
 - UDP channel for data transmission
   - MIMD congestion control
   - highly configurable/customizable
-
-## Other Sources
-- [https://hackmd.io/@rsss-statnice2022/B1jgkpqP5](https://hackmd.io/@rsss-statnice2022/B1jgkpqP5){:target="_blank"}
-- [http://statnice.dqd.cz/mgr-szz:in-ins:5-ins](http://statnice.dqd.cz/mgr-szz:in-ins:5-ins){:target="_blank"}
