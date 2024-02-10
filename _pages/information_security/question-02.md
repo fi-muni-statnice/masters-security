@@ -170,6 +170,19 @@ if (x < array1_size)
 - [Spectre, Meltdown explained](https://www.cs.toronto.edu/~arnold/427/20s/427_20S/spectreMeltdown/presentation.pdf){:target="_blank"}
 
 # Use of Hardware for Protection of Sensitive/Cryptographic Data and Their Operations
+## Hardware Security Module
+An HSM is a physical computing device that safeguards and manages secrets (keys), performs encryption/decryption functions for digital signatures, strong authentication and other cryptographic functions. HSMs may provide tamper evidence (visible signs of tampering) or tamper resistance (makes tampering difficult without making the HSM inoperable).
+
+HSMs are typically certified according to recognized standards such as Common Criteria or FIPS 140 (current version FIPS 140-3).
+
+**FIPS 140-2 Levels**:
+- FIPS 140-2 Level 1 the lowest, imposes very limited requirements; loosely, all components must be "production-grade" and various egregious kinds of insecurity must be absent.
+- FIPS 140-2 Level 2 adds requirements for physical tamper-evidence and role-based authentication.
+- FIPS 140-2 Level 3 adds requirements for physical tamper-resistance (making it difficult for attackers to gain access to sensitive information contained in the module) and identity-based authentication, and for a physical or logical separation between the interfaces by which "critical security parameters" enter and leave the module, and its other interfaces.
+- FIPS 140-2 Level 4 makes the physical security requirements more stringent, and requires robustness against environmental attacks.
+
+*[HSM]: Hardware Security Module
+*[FIPS]: Federal Information Processing Standard
 
 ## FIDO U2F Tokens
 FIDO U2F Tokens can replace passwords by a smartcard with an asymmetric keypair, challenge-response protocol and prevent phishing. During authentication, the token verifies:
@@ -196,7 +209,7 @@ There are two flows:
 *[MitM]: Man-in-the-Middle
 
 ### WebAuthn - evolution of U2F protocol
-- similar but more complex standard than U2f
+- similar but more complex standard than U2F
 
 ## TPM
 - Cryptographic smart card connected to device/inside device
@@ -250,11 +263,122 @@ Remote attestation:
 - a set of new CPU instructions
 - protection against privileged attacker
 - application requests private region of code and data - a **security enclave**
+  - encrypted enclave is stored in RAM, decrypted only inside CPU
+  - access from outside enclave is prevented on CPU level
+- proprietary Intel code inside CPU
+- vulnerable to side-channels
+- depreceated on non-server CPUs
 
 *[SGX]: Software Guard Extension
 
-## HSM
-
-*[HSM]: Hardware Security Module
-
 # Smartcards and Their Role as a Security Mechanism
+**Trusted element** is an element (hardware, software, or both) in the system intended to **increase security level** w.r.t. situation without the presence of such an element.
+
+## Types of (Smart) Cards
+1. contactless "barcode"
+  - fixed identification string (RFID)
+2. simple memory cards (magnetic stripe, RFID)
+  - small write memory (< 1KB)
+3. memory cards with PIN protection
+  - memory (< 5KB), simple protection logic
+4. cryptographic smart cards
+  - support for real cryptographic algorithms
+  - Mifare Classic, Mifare DESFire
+5. user-programmable cryptographic smart cards
+  - JavaCard, .NET card, MULTOS
+  - chip manufacturers: NXP, Infineon, Gemalto, ...
+6. secure environment (enclave) inside more complex CPUs
+  - ARM TrustZone, Intel SGX, ...
+
+*[RFID]: radio frequency identification
+*[PIN]: personal identification number
+
+## Smartcards
+- 8-32 bit processor @ 5-50 MHz
+- persistent memory 32-200+ kB (EEPROM)
+- volatile fast RAM, usually much less than 10 kB
+- truly random generator
+- cryptographic coprocessor (3DES, AES, RSA-2048, ECC, ...)
+- many possible forms (ISO 7816 standard): SIM size, USB dongles, Java rings, implants, ...
+- contact physical interface + contact-less interface (NFC)
+
+## Protection
+- intended for physically unprotected environment
+  - FIPS 140-2 Level 4
+  - Common Criteria EAL5+/6+
+- tamper protection
+  - tamper evidence (visible if physically manipulated)
+  - tamper resistance (can withstand physical attack)
+  - tamper response (e.g. erase keys during tampering)
+- protection against side-channel attacks (timing, power, EM)
+- periodic tests of TRNG functionality
+- approved crypto algorithms and key management
+- limited interface, smaller trusted computing base
+
+*[SIM]: Subscriber Identity Module
+*[EEPROM]: electrically erasable programmable read-only memory
+*[NFC]: Near Field Communication
+*[EAL]: Evaluation Assurance Level
+*[TRNG]: true random number generator
+
+## Modes of Usage
+- carrier of fixed information
+- secure carrier
+  - secret protected for transport
+- encryption/signing device
+  - key **never leaves the secure element**
+  - attacker must attack the secure element
+- verification device
+  - device with lower overall security embeds secure element for sensitive tasks via dedicated API
+- root of trust (TPM)
+  - robust store with integrity
+- computational device
+  - PC sends input for application running on secure element
+
+## Real-world Examples
+- FIDO2 U2F/WebAuthn tokens
+- Smart-ID signature system
+- cryptocurrency hardware wallets (Trezor One, Ledger Nano S)
+
+## Communication
+Smart cards communicates with the smart card reader using APDU messages. The structure of the APDU is defined by ISO/IEC 7816-4.
+
+- APDU is basic logical communication datagram
+  - header (5 bytes), up to ~256 bytes of user data
+- Header/Data format
+  - **CLA**: instruction class
+  - **INS**: instruction number
+  - **P1**, **P2**: optional data
+  - **Lc**: length of incoming data
+  - **Data**: user data
+  - **Le**: length of the expected output data
+- some values of CLA/INS/P1/P2 standardized, for better interoperability
+
+*[APDU]: application protocol data unit
+
+## JavaCard
+- cross-platform and cross-vendor applet interoperability
+- JavaCard applet is Java-like application (using a restricted subset of Java + cryptographic JavaCard APIs)
+  - uploaded to a smart card
+  - executed by the JCVM
+- access to other applet's methods and attributes prevented
+
+*[JCVM]: JavaCard Virtual Machine
+*[API]: Application Programming Interface
+
+## Attacks on Trusted Elements
+1. Non-invasive attacks
+  - API-level attacks
+    - incorrectly designed and implemented application
+    - malfunctioning application
+    - for example, key shortening
+  - communication-level attacks
+    - observation and manipulation of communication channel
+  - (remote) timing attacks
+2. Semi-invasive attacks
+  - passive side-channel attacks
+    - timing (local) / power / EM / acoustic / cache-usage / error... analysis attacks
+  - active side-channel attacks: fault injection
+    - power/light/clock glitches...
+3. Invasive attacks
+  - dismantle chip, microprobes, ...
