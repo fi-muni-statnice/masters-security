@@ -118,15 +118,142 @@ Execution of crypto algorithm can take **different time** to process input data 
 ## Microarchitectural Attacks
 - Spectre, Meltdown
 
+Three vulnerabilities:
+- bounds check bypass (Spectre)
+- branch target injection (Spectre)
+- rogue data cache load (Meltdown)
+
+They exploit the three major designs in modern processors:
+- out-of-order execution
+- speculative execution
+- caching
+
+The attacks use a cache-timing side channel to obtain the information from the accessed memory location. Fast data access means it was stored in the cache, slower access means it was stored in main memory.
+
+**Cache exploit types**:
+- Flush + Reload
+  - flush a cache line with the `CLFLUSH` instruction
+  - let a program run and access the same memory (the memory page needs to be physically shared in this attack)
+  - reload elements from the controlled memory and see whether they were accessed by the other program or not by the timing
+- Flush + Flush
+  - the reload is not needed, the second flush will be fast if the data were not accessed and slow if the data were accessed
+- Prime + Probe
+  - the attacker occupies a cache set and measures whenever a victim replaces a line in the cache set by timing side channel
+  - does not demand page sharing, coarse grained
+  - need to find out the eviction set
+
+### Meltdown
+```asm
+; rcx = kernel address, rbx = probe array
+xor rax, rax
+retry:
+mov al, byte [rcx]
+shl rax, 0xc
+jz retry
+mov rbx, qword [rbx + rax]
+```
+
+1. The content of an attacker-chosen memory location, which is inaccessible to the attacker, is loaded into a register.
+2. A transient instruction accesses a cache line based on the secret content of the register.
+3. The attacker uses Flush+Reload to determine the accessed cache line and hence the secret stored at the chosen memory location.
+
+### Spectre
+```c
+if (x < array1_size)
+  y = array2[array1[x] * 4096];
+```
+
+1. Induce speculative execution, set up the side channel (e.g. the Flush part of the Flush+Reload attack).
+2. Speculatively execute the instructions that transfer confidential information from the victim context into the covert chanenl.
+3. Recover the sensitive data (Reload phase of the Flush+Reload attack).
+
+- [Spectre, Meltdown explained](https://www.cs.toronto.edu/~arnold/427/20s/427_20S/spectreMeltdown/presentation.pdf){:target="_blank"}
+
 # Use of Hardware for Protection of Sensitive/Cryptographic Data and Their Operations
 
 ## FIDO U2F Tokens
+FIDO U2F Tokens can replace passwords by a smartcard with an asymmetric keypair, challenge-response protocol and prevent phishing. During authentication, the token verifies:
+1. that the user has physical access to the registered device,
+2. that the user is active during authentication (need to press a button on the token).
+
+U2F is a challenge-response protocol extended with *phishing and MitM protection*, *application-specific keys*, *device cloning detection* and *device attestation*.
+
+The U2F device device has a private key $k_{priv}$ and the relying party is given the corresponding public key $k_{pub}$. The key pair is generated in the device's **tamper-resistant** execution environment, from where $k_{priv}$ cannot leave.
+
+There are two flows:
+1. Registration: includes **optional** device attestation (gives relying parties the possibility to verify token properties, implemented vi an attestation certificate signed by the device vendor)
+  ![u2f-registration](/masters-security/assets/u2f_registration_flow.svg 'U2F Registration Flow')
+
+2. Authentication
+  - phishing protection: Origin (URI)
+  - MitM protection (optional): TLS Channel ID
+  - tracking prevention: application-specific keys
+  - device cloning detection: counter
+  ![u2f-authentication](/masters-security/assets/u2f_auth_flow.svg 'U2F Authentication Flow')
+
+*[FIDO]: Fast Identity Online
+*[U2F]: Universal 2nd Factor
+*[MitM]: Man-in-the-Middle
+
+### WebAuthn - evolution of U2F protocol
+- similar but more complex standard than U2f
 
 ## TPM
+- Cryptographic smart card connected to device/inside device
+  - secure storage, secure crypto
+- physical placement:
+  1. additional chip on the motherboard (discrete TPM)
+  2. incorporated inside CPU (fTPM)
+  3. incorporated in a peripheral (integrated TPM, e.g. Ethernet card)
+  4. software TPM - development, debugging
+- is accessed during boot time
+  - measured boot (TPM's PCR registers)
+  - Bitlocker encrypted drive keys
+- can be accessed later (private key operations)
 
-## HSM
+*[TPM]: Trusted Platform Module
+*[PCR]: Platform Configuration Register
+
+### Functionality
+1. Measured boot with remote attestation
+  - signed log of what was executed on the platform (in the PCR)
+2. Storage of keys (disk encryption, private keys, ...)
+3. Binding and sealing of data
+  - encryption key wrapped by the TPM's public key
+4. Platform integrity
+  - software will not start if the PCR value is incorrect
+
+### PCR
+- measurement cumulatively stored in PCR
+  - `measurement = SHA1(next block to execute)`
+  - `PCR[i] = SHA1(PCR[i] | new_measurement)`
+- PCR **cannot be erased** until reboot
+
+Remote attestation:
+1. Take PCR values (inside TPM)
+2. Sign them inside TPM by TPM's private key
+3. Remote party holds the public key and can verify signature
+
+### Keys
+- Endorsement key (EK)
+  - generated during manufacturing, permanent
+  - remain in TPM during whole chip lifetime
+- TPM Storage Root Key (SRK)
+  - generated by use after taking ownership
+  - new storage root key can be generated after TPM clear
+  - used to protect TPM keys created by application
+- Various delegate keys
+  - separate keys signed/wrapped by EK, SRK, ...
+  - application can generate and store own keys
 
 ## Intel SGX
+- a set of new CPU instructions
+- protection against privileged attacker
+- application requests private region of code and data - a **security enclave**
+
+*[SGX]: Software Guard Extension
+
+## HSM
 
 *[HSM]: Hardware Security Module
 

@@ -29,11 +29,13 @@ domain: fi-muni-statnice.github.io
 url: https://fi-muni-statnice.github.io # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jekyllrb
 github_username: fi-muni-statnice
+favicon_path: assets/favicon.ico
 
 # Build settings
 remote_theme: sighingnow/jekyll-gitbook
 plugins:
   - jekyll-feed
+  - jekyll-seo-tag
 
 safe: false
 include: ["_pages"]
