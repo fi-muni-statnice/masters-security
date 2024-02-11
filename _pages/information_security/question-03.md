@@ -5,7 +5,7 @@ category: Information Security
 layout: post
 ---
 
-$\def\F{\mathscr{F}}
+$\def\F{\mathbb{F}}
 \def\R{\mathbb{R}}
 \def\E{\mathbb{E}}
 \def\N{\mathbb{N}}
@@ -31,10 +31,119 @@ Basics of coding theory, Shannon's theorem. Entropy. Generation of truly- and ps
 - [http://statnice.dqd.cz/mgr-szz:in-bit:5-bit](http://statnice.dqd.cz/mgr-szz:in-bit:5-bit){:target="_blank"}
 
 # Coding Theory
+A code $C$ over an alphabet $\Sigma$ is a nonempty subset of $\Sigma^{*}$. A $q$-ary code is a code over an alphabet of $q$ symbols. A binary code is a code over the alphabet $\set{0, 1}$.
 
-# Shannon's Theorem
+A discrete Shannon stochastic channel is described by a triple $C = (\Sigma, \Omega, P)$, where
+- $\Sigma$ is an **input alphabet**,
+- $\Omega$ is an **output alphabet**,
+- $P: \Sigma \times \Omega \to \set{0, 1}$ is the probability that the output of the channel is $o$ if the input is $i$.
+
+## Hamming Distance
+Hamming distance of words $x, y$ is the number of symbols in which the words $x$ and $y$ differ.
+
+An important parameter of codes is their **minimal distance**, which is the smallest number of errors that can change one codeword into another.
+
+$$h(C) = \min\condset{h(x, y)}{x, y \in C, x \not= y}$$
+
+## Error Correcting Theorems
+1. A code $C$ can **detect** up to $s$ errors if $h(C) \geq s + 1$.
+2. A code $C$ can **correct** up to $t$ errors if $h(C) \geq 2t + 1$.
+
+> An $(n, M, d)$ code $C$ is a code such that
+> - $n$ is the **length** of codewords,
+> - $M$ is the **number** of codewords,
+> - $d$ is the **minimum distance** of two codewords in $C$.
+>
+> We strive to design codes with small $n$, large $M$ and large $d$.
+{: .block-tip}
+
+## Linear Codes
+We fix our alphabet to be elements of $\F_q$, where $q$ is (a power of) a prime. $\F_q^n$ is the vector space of all $n$-tuples over $GF(q)$.
+
+> $C \subseteq \F_q^n$ is a linear code if
+> 1. $u + v \in C$ for all $u, v \in C$,
+> 2. $au \in C$ for all $u \in C, a \in GF(q)$.
+{: .block-tip}
+
+A subset $C \subseteq \F_q^n$ is a linear code iff one of the following conditions is satisfied:
+1. $C$ is a linear subspace of $\F_q^n$.
+2. Sum of any two codewords from $C$ is in $C$ (for the case $q = 2$).
+
+*(nothing surprising here, linear codes are simple vector spaces)*
+
+If $C$ is a $k$-dimensional subspace of $\F_q^n$, then $C$ is called **$[n, k]$-code**. It has $q^k$ codewords. If the minimal distance of $C$ is $d$, then it is said to be the $[n, k, d]$ code.
+
+A base $B$ of $C$ is a set of $k$ codewords of $C$ such that each codeword of $C$ is a linear combination of the codewords from the base $B$ (the span of $B$ is $C$). The base can be represented by a $(k, n)$ matrix $G_B$: the **generator matrix** of $C$, the $i$-th row of which is the $i$-th codeword of $B$.
+
+> Let $w(x)$ (**weight of $x$**) denote the number of non-zero entries of $x$.
+>
+> Let $C$ be a linear code and let the weight of $C$ ($w(C)$) be the smallest of the weights of non-zero codewords of $C$. Then $h(C) = w(C)$.
+{: .block-warning}
+
+### Equivalent Linear Codes
+> Two $k \times n$ matrices generate equivalent linear $[n, k]$-codes over $\F_q^n$ if one matrix can be obtained from the other by a sequence of the following operations:
+> 1. permutation of the rows,
+> 2. multiplication of a row by a non-zero scalar,
+> 3. addition of one row to another,
+> 4. permutation of columns,
+> 5. multiplication of a column by a non-zero scalar.
+{: .block-warning}
+
+Operations 1.-3. replace one basis by another. Operations 4. and 5. convert a generator matrix to one of an equivalent code.
+
+By operations 1.-5., every generator matrix $G^\prime$ can be transformed into the **standard form**:
+
+$$G = [I_k | A]$$
+
+where $I_k$ is the $k \times k$ identity matrix and $A$ is a $k \times (n - k)$ matrix.
+
+### Encoding/Decoding
+The generator matrix $G$ of a $[n, k]$-code over $\F_q^n$ generates the codewords $w \in \F_q^n$ of a linear code $C$ by
+
+$$w = sG$$
+
+where $s \in \F_q^k$ is any input keyword.
+
+> Given a linear $[n, k]$-code $C$, the **dual code** of $C$, denoted by $C^\perp$, is defined by
+>
+> $$C^\perp = \condset{v \in \F_q^n}{v \cdot u = 0 \text{ for all } u \in C}$$
+>
+> where $\cdot$ is the inner (scalar) product of two vectors.
+{: .block-tip}
+
+We decode $C$ by creating the parity check matrix $H$, which is the generator matrix of the dual code $C^\perp$. If $G$ is the generator matrix of $C$ in standard form, then $H$ is the $(n - k) \times n$ matrix defined as
+
+$$H = [-A | I_{n - k}]$$
+
+Decoding **random** linear codes is an NP-complete problem! However, there exist classes of codes which are easy to both encode and decode, such as the **Hamming codes**.
+
+Given the parity-check matrix $H$, then we decode by computing the syndrome:
+1. $S(y) = yH^T$
+2. If $S(y) = 0$, then $y$ is the codeword sent.
+3. If $S(y) \not = 0$, then assuming a single error, the $i$-th row of $H^T$ is the same as $S(y)$ and represents that the error happened at the $i$-th position.
+
+### Hamming Code
+> Let $r$ be an integer and $H$ be an $r \times (2^r - 1)$ matrix which has non-zero distinct words from $\F_2^r$ as columns. The code having $H$ as its parity-check matrix is called **binary Hamming code** and denoted by Hamming($2^r - 1$, $2^r - 1 - r$).
+{: .block-tip}
+
+Hamming codes are **perfect codes** - they they achieve the highest possible rate for codes with their block length and minimum distance of three. Hamming codes detect one-bit and two-bit errors, or correct one-bit errors without detection of uncorrected errors.
+
+### Other Codes
+Reed-Solomon codes are $[n, k, n - k + 1]$ linear codes. They are widely used (in QR codes for example). It's based on creating redundant information by evaluating a polynomial at more values of $x$ than is strictly necessary.
+
+*[QR]: quick-response
+
+Polar codes and Turbo codes are other widely used families (3G, 4G, 5G networks) of linear block codes. The channel performance of these codes almost close the gap to the Shannon limit.
 
 # Entropy
+*Also check out [Probability, Theory of Information](../question-04/) for equivalent definitions with IV111 notation. These ones follow the IV054 slides.*
+
+Let $X$ be a random variable which takes a value $x$ with probability $p(x)$. The **entropy** of $X$ is defined by
+
+$$S(X) = -\sum_{x \in \Im(X)}{p(x) \log p(x)}$$
+
+# Shannon's Noiseless Coding Theorem
+Shannon's noiseless coding theorem says that in order to transmit $n$ values of $X$, we **need**, and **it is sufficient**, to use $nS(X)$ bits.
 
 # Generation of Random Sequences
 - *quality* and *unpredictability* is important for random data in cryptography (keys, padding, nonces, ...)
@@ -51,7 +160,7 @@ Basics of coding theory, Shannon's theorem. Entropy. Generation of truly- and ps
   - **acceptable** (in some cases): software-based (process, network, I/O completion statistics)
   - **bad** (insufficient entropy): predictable, system date/time, process ID
 
-## Generating pseudorandom numbers
+## Generating Pseudorandom Numbers
 - pseudo- or deterministic random number generation (PRNG/DRNG)
 - generated by deterministic algorithm
   - short input (seed) - truly random data
@@ -157,8 +266,32 @@ Basic types of PRNG utilize:
   - generators that pass such tests are considered "good"
 
 # Cryptographic Protocols
+A **protocol** is a multi-party algorithm defined by a sequence of steps precisely specifying the actions required of two or more parties in order to achieve a specified objectives.
+
+Objectives of cryptographic protocols:
+- confidentiality (secrecy)
+- authentication of origin
+- entity authentication
+- integrity
+- key establishment
+- non-repudiation
+- ...
+
+## Authentication
+Shared-key crypto:
+- based on trust in the party the key is shared with
+- *authentication ~ ability to encrypt/decrypt (or MAC)*
+
+Public-key crypto:
+- based on trust in the party possessing the private key and
+- trust in link between the public key and other data
+- *authentication ~ ability to sign or decrypt messages*
 
 ## Methods of Key Establishment
+Key establishment protocols establish a shared secret to two or more parties for subsequent cryptographic use.
+
+- **Key Transport**: one party securely transfers a secret value to other(s)
+- **Key agreement**: shared secret is derived by two (or more) parties based on data contributed by, or associated with, each of these, and that no party can predetermine the resulting value
 
 ## Zero-knowledge Protocols
 A zero-knowledge proof is a method of proving the validity of a statement **without revealing anything other than the validity of the statement itself**.
