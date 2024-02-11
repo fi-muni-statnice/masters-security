@@ -9,3 +9,9 @@ Audit, security management, risk management, threat countermeasures. Security ev
 
 #### Other Sources
 - [https://hackmd.io/@rsss-statnice2022/r1guzWVuc](https://hackmd.io/@rsss-statnice2022/r1guzWVuc){:target="_blank"}
+
+ANSI X9.31
+ANSI X9.62
+FIPS 140-2
+FIPS 140-3
+FIPS 186
