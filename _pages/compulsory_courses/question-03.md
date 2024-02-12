@@ -79,7 +79,7 @@ It is important not to provide information about whether the padding of a decryp
 - needs padding
 
 ### CFB
-Similar to CBC. Each block of plaintext is XORed with the previous ciphertext after **the previous ciphertext** is encrypted. The first ciphertext block is IV encrypted and then XORed with the first plaintext block. Be aware the decryption process uses block cipher **encryption**, as is the case with all the ciphers that XOR after the encryption (CFB, OFB, CTR).
+Similar to CBC. Each block of plaintext is XORed with the previous ciphertext after **the previous ciphertext** is encrypted. The first ciphertext block is IV encrypted and then XORed with the first plaintext block. Be aware the decryption process uses block cipher **encryption**, as is the case with all the ciphers that XOR after the encryption of the IV/previous ciphertext (CFB, OFB, CTR).
 
 ![cfb-encryption](/masters-security/assets/CFB_encryption.svg 'CFB mode encryption')
 ![cfb-decryption](/masters-security/assets/CFB_decryption.svg 'CFB mode decryption')
@@ -134,11 +134,12 @@ We use hash functions for a plethora of different purposes, such as:
   - BLAKE2/BLAKE3 modern algorithms
 - signature generation and verification
   - ECDSA standardly uses the SHA2 family (SHA-256, SHA-384, SHA-512)
+  - Ed25519 uses SHA-512
 - password verification
   - the hash function should be slow and memory-hard
   - PBKDF2, scrypt, Argon2
 - proof-of-work
-  - Bitcoin uses SHA-256, Ethereum uses KECCAK-256
+  - Bitcoin uses SHA-256, Ethereum used KECCAK-256 (Ethereum does not use PoW anymore)
 - file/data identifier
   - Git uses SHA-1 with [plans](https://git-scm.com/docs/hash-function-transition/){:target="_blank"} to move to a stronger hash function
 
@@ -192,7 +193,7 @@ To calculate the CBC-MAC of message $m$, one encrypts $m$ in CBC mode with zero 
 CBC-MAC on its own **is not secure** for variable-length messages. It is used to construct a pseudorandom function family which is used as a component of the CCM mode.
 
 ### Poly1305
-Poly1305 is a universal hash family which also serves as a MAC. It works by evaluating a high-degree polynomial (specified by the key) over a prime field $\mathbb{F}_{2^{130} - 5}$ (yep, $2^{130} - 5$ is a prime).
+Poly1305 is a universal hash family which also serves as a MAC. It works by evaluating a high-degree polynomial (the point to evaluate at is specified by the key, the polynomial coefficients by the message) over a prime field $\mathbb{F}_{2^{130} - 5}$ (yep, $2^{130} - 5$ is a prime).
 
 > Let $U$ be the set of universe keys, $M$ the number of possible messages to hash. A family of functions $H = \set{h: U \to \set{1, \dots, M}}$ is a **universal hash function family** if for $x, y \in U, x \not= y$,
 >

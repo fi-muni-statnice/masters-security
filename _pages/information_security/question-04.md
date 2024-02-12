@@ -71,6 +71,9 @@ Mutually exclusive and collectively exhaustive subset of $S$ is called a **parti
 > - $P: \F \to [0, 1]$ is a **probability function**.
 {: .block-tip}
 
+> We cannot use $\F = 2^S$ because $\F$ has to be a [**measurable set**](https://stats.stackexchange.com/questions/199280/why-do-we-need-sigma-algebras-to-define-probability-spaces){:target="_blank"}.
+{: .block-danger}
+
 # Random Variables
 *[RV]: random variable
 We define random variables to develop methods for studying random experiments with outcomes that can be described numerically. Almost all probabilistic computation is done using random variables.
@@ -111,7 +114,12 @@ $$P([X = x]) = P(\condset{s \in S}{X(s) = x}) = \sum_{s:X(s)=x}{P(s)}$$
 > $$F_X(x) = P(X \leq x)$$
 {: .block-tip}
 
-Mean value, variance. Stochastic processes, Markov chains. Theory of information (entropy, mutual information), coding theory (Huffman codes, noisy channel capacity
+> **Probability density function** of $X$ is the function $f_X: \R \to \R$, for which
+>
+> $$F_X(x) = \int_{-\infty}^x f_X(t)dt$$
+>
+> holds.
+{: .block-tip}
 
 ## Mean Value
 > **Expectation** (mean value) of a random variable $X$ is defined as
@@ -200,14 +208,14 @@ The Strong Law of Large Numbers states that for every infinite sequence the aver
 
 The $m$-step transition matrix $P^{(m)} = P^m$ gives us the $m$-step reachability for all pairs of states in $S$.
 
-> The **hitting time** of a set of states $A \subseteq S$ is a random variable $H^A: 2^S \to \set{0, 1, 2, \cdots} \cup \set{\infty}$ given by
+> The **hitting time** of a set of states $A \subseteq S$ is a random variable $H^A: \Omega \to \set{0, 1, 2, \cdots} \cup \set{\infty}$ given by
 >
-> $$H^A = \inf\condset{n \geq 0}{X_n \in A}$$
+> $$H^A(\omega) = \inf\condset{n \geq 0}{X_n(\omega) \in A}$$
 {: .block-tip}
 
-We write $i \Rightarrow^* j$ as an abbreviation for $H^\set{j} < \infty$ given $X_0 = i$ (starting from state $i$, we *eventually visit* $j$).
+We write $i \Rightarrow^* j$ as an abbreviation for $H^{\set{j}} < \infty$ given $X_0 = i$ (starting from state $i$, we *eventually visit* $j$).
 
-We write $i \Rightarrow^+ j$ as an abbreviation for $0 < H^\set{j} < \infty$ given $X_0 = i$ (starting from state $i$, we *eventually visit* $j$ in a *positive number of steps*).
+We write $i \Rightarrow^+ j$ as an abbreviation for $0 < H^{\set{j}} < \infty$ given $X_0 = i$ (starting from state $i$, we *eventually visit* $j$ in a *positive number of steps*).
 
 > Starting from a state $s$, the **probability of hitting** $A \subseteq S$ is
 >
@@ -254,12 +262,36 @@ In a **finite-state Markov chain**, each recurrent state is almost surely either
 - long-run limit distribution
 - stationary (invariant) distribution
 
+## Continuous-Time Markov Chains
+Exponential distribution is (the only continuous) memoryless distribution:
+> For an exponentially distributed random variable $X$ and every $t, t_0 \geq 0$, it holds that
+>
+> $$P(X > t_0 + t \st X > t_0) = P(X > t)$$
+{: .block-warning}
+
+*[CTMC]: continuous-time Markov chain
+
+> A Continuous-Time Markov Chain is an event-driven system with exponentially distributed events.
+{: .block-tip}
+
+### Queues
+Queues are an example of CTMC.
+
+Kendall notation: A/S/n/B/K, where
+- A: inter-arrival time distribution (**G** - general, **M**, exponential, **D** - deterministic)
+- S: service time distribution (**G** - general, **M**, exponential, **D** - deterministic)
+- n: number of servers ($1, 2, \dots, \infty$)
+- B: buffer size ($1, 2, \dots, \infty$), implicit value $\infty$
+- K: population size ($1, 2, \dots, \infty$), implicit value $\infty$
+
+**Discretization**: for long-run average (steady-state) propertiess
+
 # Theory of Information
 
 ## Entropy
 > Let $X$ be a random variable with a probability distribution $p(x) = P(X = x)$. Then the **(Shannon) entropy** of the random variable $X$ is defined as
 >
-> $$H(X) = -\sum_{x \in \Im(X)} \log p(x)$$
+> $$H(X) = -\sum_{x \in \Im(X)} p(x) \log p(x)$$
 {: .block-tip}
 
 > Let $X$ and $Y$ be random variables and $y \in \Im(Y)$. The **conditional entropy** of $X$ given $Y = y$ is
@@ -338,7 +370,7 @@ Let $\Im(X)^+$ denote the set of all nonempty strings over the alphabet $\Im(X)$
 
 > An **extension** $C^{\*}$ of a code $C$ is the mapping from $\Im(X)^+$ to $D^{\*}$ defined by
 >
-> $$C^{\*}(x_1 x_2 \dots x_n) = C(x_1)C(x_2)\dots C(x_n)$$
+> $$C^{*}(x_1 x_2 \dots x_n) = C(x_1)C(x_2)\dots C(x_n)$$
 >
 > A code is **uniquely decodable** iff its extension is non-singular.
 {: .block-tip}
@@ -359,7 +391,7 @@ All prefix codes are trivially uniquely decodable, moreover a codeword can be de
 {: .block-tip}
 
 #### Proof
-> Consider a $d$-ary tree in which every inner node has $d descendants. Each edge represents a choice of a code alphabet symbol at a particular position. **Each codeword is represented by a node** (does not hold the other way) and the path from the root to a particular node (codeword) specifies the codeword symbol. The prefix condition implies that no codeword is an ancestor of another codeword on the three.
+> Consider a $d$-ary tree in which every inner node has $d$ descendants. Each edge represents a choice of a code alphabet symbol at a particular position. **Each codeword is represented by a node** (does not hold the other way) and the path from the root to a particular node (codeword) specifies the codeword symbol. The prefix condition implies that no codeword is an ancestor of another codeword on the three.
 >
 > Let $l_{\max} = \max\set{l_1, l_2, \dots, l_m}$. Consider all nodes of the tree at the level $l_{\max}$. A codeword at level $l_i$ has $d^{l_{\max} - l_i}$ descendants at level $l_{\max}$. Sets of descendants of different codewords must be disjoint and the total number of nodes in all these sets must be at most $d^{l_{\max}}$. Summing over all codewords we have
 >
@@ -380,7 +412,7 @@ All prefix codes are trivially uniquely decodable, moreover a codeword can be de
 > which is equivalent to $\sum_{j=1}^{i - 1}{d^{-l_j}} = 1$. But we still have the codeword $i$ to add, meaning $\sum_{j = 1}^i {d^{-l_j}} > 1$, violating the initial assumption.
 
 ### McMillan Inequality
-> For any **uniquely decodable** over an alphabet of size $d$, the codeword lengths (including multiplicities) $l_1, l_2, \dots, l_m$ satisfy
+> For any **uniquely decodable** code over an alphabet of size $d$, the codeword lengths (including multiplicities) $l_1, l_2, \dots, l_m$ satisfy
 >
 > $$\sum_{i = 1}^m{d^{-l_i}} \leq 1$$
 >
@@ -469,7 +501,17 @@ Let $x^k = x_1, x_2, \dots x_k, X^k = X_1, X_2, \dots, X_k$.
 > where $X$ is the input random variable, $Y$ describes the output distribution and the maximum is taken over all possible input distributions $p_X$.
 {: .block-tip}
 
+> **Probability of an error** for the code $(M, n)$ and the channel $(X, p(y \st x), Y)$ **provided the $i$-th index was sent** is
+>
+> $$\lambda_i = P(g(Y^n) \not= i \st X^n = f(i))$$
+>
+> The **maximal probability of an error** for an $(M, n)$ code is
+>
+> $$\lambda_{\max} = \max_{i \in \set{1, 2, \dots, M}}\lambda_i$$
+{: .block-tip}
+
 ## Channel Coding Theorem
 > Let $C$ be a capacity of a communication channel and $R$ be a code rate.
 > - If $R < C$, then for any $\varepsilon > 0$ there exists a code with rate $R$ (and large enough block length $n$) whose error probability $\lambda_{\max}$ is less than $\varepsilon$.
 > - If $R > C$, the error probability $\lambda_{\max}$ of any code with rate $R$ is bounded away from zero.
+{: .block-warning}
