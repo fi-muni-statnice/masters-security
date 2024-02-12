@@ -117,7 +117,7 @@ The probability framework is described in [Probability, Theory of Information](.
 >
 > Random variable $X$ is **discrete**, if there exists a finite or countable set $\set{x_1, x_2, \dots}$ such that $P(X = x_i) > 0$ and $\sum_{i = 1}^\infty P(X = x_i) = 1$.
 >
-> Random variable $X$ is (absolutely) **continuous**, if there exists an integrable an nonnegative function $f = f_X$ such that $F(x) = \int_{-\infty}^x f(t) dt$ for all $x \in \R$.
+> Random variable $X$ is (absolutely) **continuous**, if there exists an integrable and nonnegative function $f = f_X$ such that $F(x) = \int_{-\infty}^x f(t) dt$ for all $x \in \R$.
 {: .block-tip}
 
 # Random Sampling
@@ -222,7 +222,7 @@ $$f(x) = \left\{
     0, & \text{otherwise.}
 \end{array}\right.$$
 
-Random variable $X$ represents time between two events in a [Poisson point process](https://en.wikipedia.org/wiki/Poisson_point_process).
+Random variable $X$ represents time between two events in a [Poisson point process](https://en.wikipedia.org/wiki/Poisson_point_process){:target="_blank"}.
 
 Exponential distribution is the only continuous memoryless distribution.
 
@@ -461,7 +461,7 @@ Under $H_0$, the test statistic $Z \approx \mc{N(0, 1)}$.
 
 - **Model**: $X_1, \dots, X_n$ is a random sample from a normal distribution $\mc{N}(\mu, \sigma^2)$.
 - **Null hypothesis**: $H_0: \mu = \mu_0$.
-- **Test statistic**: $Z = \sqrt{n}\frac{\bar{X} - \mu_0}{S}$. Its value is denoted by $t$.
+- **Test statistic**: $Z = \sqrt{n}\frac{\bar{X} - \mu_0}{S}$. Its value is denoted by $z$.
 - **Both-sided alternative**: $H_1: \mu \not= \mu_0$
   - $W = (-\infty, -z_{1 - \alpha/2}(n - 1)) \cup (z_{1 - \alpha/2}(n - 1), \infty)$
   - approximate $p$-value is $2 \min\set{\theta(z), 1 - \theta(z)}$ where $\theta$ is the cdf of $\mc{N}(0, 1)$,
@@ -538,7 +538,7 @@ For testing equality of means of more than two groups, we cannot repeatedly invo
 - **Test statistic**: $T = \sqrt{n}\frac{\bar{Z}}{S}$
 
 ## ANOVA
-We want to find out whether means of $k$ groups are equal, but if we wanted to use $t$-tests for every pair, we would need to do $k \choose 2 = c$ of the tests. For that we would need to set the confidence level of every test to $\frac{\alpha}{c}$, which makes the test procedure too conservative and the tests will have small power. ANOVA helps us to fix the problem.
+We want to find out whether means of $k$ groups are equal, but if we wanted to use $t$-tests for every pair, we would need to do ${k \choose 2} = c$ of the tests. For that we would need to set the confidence level of every test to $\frac{\alpha}{c}$, which makes the test procedure too conservative and the tests will have small power. ANOVA helps us to fix the problem.
 
 - **Model:**
   - $X_{1,1}, \dots, X_{1, n_1}$ is a random sample from $\mc{N}(\mu_1, \sigma^2)$
