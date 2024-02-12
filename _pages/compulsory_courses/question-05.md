@@ -113,7 +113,7 @@ Is a plot that displays values for two variables of the dataset using Cartesian 
 # Discrete and Continuous Random Variables
 The probability framework is described in [Probability, Theory of Information](../../information_security/question-04/).
 
-> Let $(\Omega, \bb{A}, P)$ be a probability space. The measurable mapping $X: \Omega \to \R$ is called a **random variable**.
+> Let $(\Omega, \mc{A}, P)$ be a probability space. The measurable mapping $X: \Omega \to \R$ is called a **random variable**.
 >
 > Random variable $X$ is **discrete**, if there exists a finite or countable set $\set{x_1, x_2, \dots}$ such that $P(X = x_i) > 0$ and $\sum_{i = 1}^\infty P(X = x_i) = 1$.
 >

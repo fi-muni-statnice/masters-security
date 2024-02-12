@@ -66,7 +66,7 @@ Standard IT organizations:
 - Provides the functionality for an interaction with transmission media.
 - Provides services for the *Data Link Layer*
   - the Data Link Layer passes/obtains data to/from the Physical Layer in the form of 0s and 1s organized into **frames**
-  - the Physical Layer transforms the streams of bits (from frames) into *spread* through the transmission media
+  - the Physical Layer transforms the streams of bits (from frames) into *signals* spread through the transmission media
 - controls the transmission media:
   - sending/receiving the data (signals)
   - data transformation (coding) into signals
@@ -448,7 +448,7 @@ The amount of data allowed to be sent to the network is defined by:
 - provides services to *users*
   - application programs specific for a particular purpose (email, WWW, DNS)
 - comprises *network applications/programs* and *application protocols*
-  - application protocols (HTTP, SMTR, etc.) are parts of network applications (web, email)
+  - application protocols (HTTP, SMTP, etc.) are parts of network applications (web, email)
   - application protocols define:
     - types of messages which the applications exchange (*request*/*response*)
     - message syntax
@@ -560,11 +560,11 @@ Address resolution:
 - **main idea**: mobile devices have their home network
 - used addresses:
   - *Home Address* - global unicast persistent address through which a mobile node is always accessible
-  - *Care-of Address* - global unicast address whil the mobile node is in a foreign network
+  - *Care-of Address* - global unicast address while the mobile node is in a foreign network
 - *Correspondent Node* (CN) - a peer node with which a mobile node is communicating
 - *Home Agent* (HA) - router in the home network through which the mobile node is always accessible
   - receives datagram destined to the mobile node and forwards them to the node via a tunnel
-- *route optimization* - direct communication of the mobile and corresopnding nodes in order to optimize the communication
+- *route optimization* - direct communication of the mobile and corresponding nodes in order to optimize the communication
   - not necessary
 
 Concept:
@@ -641,7 +641,7 @@ Concept:
   - *ESP Trailer* - placed after the encrypted data, contains padding used to align the encrypted data
   - *ESP Authentication Data* - if the authentication feature is used, this contains an *Integrity Check Value* (similar to AH)
 - ESP uses stronger encryption algorithms than AH, so it is more computationally expensive
-- AH authenticates the whole diagram, ESP does not authenticate the outer IP header
+- AH authenticates the whole datagram, ESP does not authenticate the outer IP header
 
 ## QoS
 Two architectures for providing data with priorities and quality guarantees:
@@ -718,7 +718,7 @@ Router must perform two tasks: *routing* and *packet forwarding*.
 
 ### Forwarding Functions
 - **IP Header Validation**: every IP packet needs to be validated - the version number, header length, checksum, etc.
-- **Packet Lifetime ControL**: decrementing the TTL field, if the TTL is zero or negative, the packet is discarded and an ICMP message is generated
+- **Packet Lifetime Control**: decrementing the TTL field, if the TTL is zero or negative, the packet is discarded and an ICMP message is generated
 - **Checksum Recalculation**: header checksum needs to be updated
 - **Route Lookup**: packet destination address used to search the forwarding table
 - **Fragmentation**: if the MTU of the outgoing link is smaller than the size of the packet being transmitted
@@ -786,7 +786,7 @@ Achieved by a combination of:
 1. traffic measurements are collected
   - SNMP, NetFlow
 2. topology and configuration is obtained from the network
-3. a link weight determination process determines linnk weights
+3. a link weight determination process determines link weights
 
 How often to update the link weights?
 - usually once a day, once a week - up to the administrator
@@ -839,7 +839,7 @@ MPLS is a forwarding mechanism presented as a way of improving the forwarding sp
 
 *[LSR]: Label-Switched Router
 
-#### Core Label-Switcher Routers
+#### Core Label-Switched Routers
 - ensure packets' forwarding based on the assigned label
 - the IP header is neither modified nor analysed by the Core-LSRs, just the MPLS labels
 
@@ -894,7 +894,7 @@ where MSS is the maximum segment size and RTT is the round-trip time.
 
 ## Conservative Extensions to TCP
 ### GridDT
-- a collection of ad-hoc modifitactions
+- a collection of ad-hoc modifications
 - just the sender side has to be modified
 - updated congestion control
 - faster slowstart
