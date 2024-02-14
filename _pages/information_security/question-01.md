@@ -16,18 +16,28 @@ ISO/IEC 27000 series - ISMS
 *[ISMS]: Information Security Management System
 
 ANSI X9.23
+- FINANCIAL INSTITUTION ENCRYPTION OF WHOLESALE FINANCIAL MESSAGES
 - padding for CBC with random bytes, the last byte is set to the number of bytes added
 
 ANSI X9.31
+- Digital Signatures Using Reversible Public Key
+Cryptography for the Financial Services Industry (rDSA)
 
 ANSI X9.62
+- Public Key Cryptography for the Financial Services Industry : The Elliptic Curve Digital Signature Algorithm (ECDSA)
+
+ANSI X9.82
+- random number generation
 
 FIPS 140-2 (NIST)
+- Security Requirements for Cryptographic Modules
 
 FIPS 140-3
+- Security Requirements for Cryptographic Modules
 
 FIPS 186-5 (NIST)
-- digital signatures, DSS; RSA, ECDSA, EdDSA
+- Digital Signature Standard (DSS)
+- digital signatures; RSA, ECDSA, EdDSA
 - in the latest version, DSA was removed as approved for digital signature generation and EdDSA was added
 
 *[DSS]: Digital Signature Standard
@@ -35,7 +45,11 @@ FIPS 186-5 (NIST)
 PKCS (RSA Security)
 
 ISO/IEC 11770 - key management
+- Information security: Key management
+
 X.509 (ITU)
+- The Directory: Public-key and attribute certificate frameworks
+
 RFC (IETF)
 
 ETSI EN 319 142-1 - Electronic Signatures and Infrastructures
